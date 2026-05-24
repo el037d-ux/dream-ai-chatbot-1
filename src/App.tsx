@@ -13,7 +13,6 @@ import DictionaryPage from '@/pages/DictionaryPage';
 import ProfilePage from '@/pages/ProfilePage';
 import AboutPage from '@/pages/AboutPage';
 import ContactPage from '@/pages/ContactPage';
-import AuthPage from '@/pages/AuthPage';
 import SubscribePage from '@/pages/SubscribePage';
 
 const queryClient = new QueryClient();
@@ -28,24 +27,12 @@ function AppContent() {
     </div>
   );
 
-  if (!user) {
-    return (
-      <div className="relative min-h-screen bg-background overflow-x-hidden">
-        <StarsBackground />
-        <div className="relative z-10">
-          <Navigation active="auth" onNavigate={() => {}} />
-          <AuthPage onSuccess={() => setPage('chat')} />
-        </div>
-      </div>
-    );
-  }
-
   const renderPage = () => {
     switch (page) {
       case 'chat': return <ChatPage onSubscribe={() => setPage('subscribe')} />;
       case 'history': return <HistoryPage />;
       case 'dictionary': return <DictionaryPage />;
-      case 'profile': return <ProfilePage />;
+      case 'profile': return <ProfilePage onNavigate={setPage} />;
       case 'about': return <AboutPage />;
       case 'contact': return <ContactPage />;
       case 'subscribe': return <SubscribePage onBack={() => setPage('chat')} />;
