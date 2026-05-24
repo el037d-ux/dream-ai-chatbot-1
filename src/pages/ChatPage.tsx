@@ -8,11 +8,7 @@ interface Message {
   timestamp: Date;
 }
 
-const SAMPLE_RESPONSES = [
-  `✨ **Архетипический анализ по Юнгу**\n\nВодная стихия в сновидениях — это обращение к коллективному бессознательному. Океан символизирует материнское начало, бесконечность психических глубин и скрытые аспекты Тени.\n\n🔮 **Интерпретация Фрейда**\nПогружение в воду традиционно связывается с возвращением в утробное состояние — желанием укрытия от тревог реальной жизни.\n\n💫 **Предсказание**\nВаш сон говорит о внутренней трансформации. В ближайшие недели вы столкнётесь с необходимостью принять важное решение, которое откроет новый этап вашего пути.`,
-  `🌑 **Символика Тени** (Юнг)\n\nТёмная фигура — классическое воплощение архетипа Тени. Это подавленные, непризнанные части вашей личности, требующие интеграции.\n\n⚗️ **Психоаналитический аспект** (Фрейд)\nПреследование означает внутренний конфликт между Эго и подавленными желаниями. Страх — защитный механизм.\n\n✨ **Мистическое послание**\nВселенная призывает вас взглянуть в лицо своим страхам. То, от чего вы убегаете во сне — именно то, что несёт ключ к вашей силе.`,
-  `🌙 **Анима/Анимус** (Юнг)\n\nПолёт во снах — проявление архетипа Героя, стремление Эго преодолеть земные ограничения.\n\n🔥 **По Фрейду**\nПолёт связан с либидозной энергией, свободой от социальных табу и ощущением всемогущества.\n\n💜 **Космическое послание**\nВаши амбиции вот-вот найдут реализацию. Звёзды указывают на период творческого подъёма — доверьтесь интуиции.`,
-];
+const API_URL = 'https://functions.poehali.dev/287212b7-1f20-4ef7-9d1e-bed76a4bad55';
 
 const GREETINGS = [
   'Опишите свой сон как можно подробнее — каждая деталь важна для точного анализа...',
@@ -31,6 +27,7 @@ export default function ChatPage() {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const [placeholder] = useState(GREETINGS[Math.floor(Math.random() * GREETINGS.length)]);
   const bottomRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -41,27 +38,44 @@ export default function ChatPage() {
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
+
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
       content: input.trim(),
       timestamp: new Date(),
     };
-    setMessages(prev => [...prev, userMessage]);
+    const updatedMessages = [...messages, userMessage];
+    setMessages(updatedMessages);
     setInput('');
     setIsLoading(true);
+    setError('');
 
-    await new Promise(r => setTimeout(r, 2200));
+    try {
+      const apiMessages = updatedMessages
+        .filter(m => m.id !== '0')
+        .map(m => ({ role: m.role, content: m.content }));
 
-    const response = SAMPLE_RESPONSES[Math.floor(Math.random() * SAMPLE_RESPONSES.length)];
-    const assistantMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      role: 'assistant',
-      content: response,
-      timestamp: new Date(),
-    };
-    setMessages(prev => [...prev, assistantMessage]);
-    setIsLoading(false);
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: apiMessages }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.answer) throw new Error('Нет ответа');
+
+      setMessages(prev => [...prev, {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: data.answer,
+        timestamp: new Date(),
+      }]);
+    } catch {
+      setError('Звёзды временно молчат... Попробуйте ещё раз.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -80,7 +94,6 @@ export default function ChatPage() {
 
   return (
     <div className="flex flex-col h-screen pt-20">
-      {/* Chat messages */}
       <div className="flex-1 overflow-y-auto px-4 py-6">
         <div className="max-w-3xl mx-auto space-y-6">
           {messages.map((msg, idx) => (
@@ -89,7 +102,6 @@ export default function ChatPage() {
               className={`flex gap-4 animate-message ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
               style={{ animationDelay: `${idx * 0.05}s` }}
             >
-              {/* Avatar */}
               <div className={`w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center text-lg
                 ${msg.role === 'assistant'
                   ? 'bg-primary/20 border border-primary/40 animate-glow'
@@ -98,8 +110,6 @@ export default function ChatPage() {
               >
                 {msg.role === 'assistant' ? '🌙' : '✨'}
               </div>
-
-              {/* Bubble */}
               <div className={`max-w-[75%] rounded-2xl px-5 py-4 text-sm leading-relaxed font-raleway
                 ${msg.role === 'assistant'
                   ? 'glass border border-primary/20 text-foreground'
@@ -114,7 +124,6 @@ export default function ChatPage() {
             </div>
           ))}
 
-          {/* Loading */}
           {isLoading && (
             <div className="flex gap-4 animate-message">
               <div className="w-10 h-10 rounded-full flex-shrink-0 bg-primary/20 border border-primary/40 animate-glow flex items-center justify-center text-lg">
@@ -125,9 +134,7 @@ export default function ChatPage() {
                   <span className="text-muted-foreground text-sm font-raleway italic">Морфей читает знаки...</span>
                   <div className="flex gap-1">
                     {[0, 1, 2].map(i => (
-                      <div
-                        key={i}
-                        className="w-1.5 h-1.5 rounded-full bg-primary"
+                      <div key={i} className="w-1.5 h-1.5 rounded-full bg-primary"
                         style={{ animation: `twinkle 1.2s ease-in-out infinite`, animationDelay: `${i * 0.2}s` }}
                       />
                     ))}
@@ -136,11 +143,16 @@ export default function ChatPage() {
               </div>
             </div>
           )}
+
+          {error && (
+            <div className="text-center text-sm text-muted-foreground font-raleway italic">
+              {error}
+            </div>
+          )}
           <div ref={bottomRef} />
         </div>
       </div>
 
-      {/* Input area */}
       <div className="glass-strong border-t border-border/30 px-4 py-4">
         <div className="max-w-3xl mx-auto">
           <div className="flex gap-3 items-end">

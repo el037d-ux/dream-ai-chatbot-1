@@ -60,14 +60,14 @@ def handler(event: dict, context) -> dict:
         chat_messages.append({'role': 'user', 'content': dream_text})
 
     payload = json.dumps({
-        'model': 'gpt-4o-mini',
+        'model': 'deepseek-r1',
         'messages': chat_messages,
-        'max_tokens': 600,
+        'max_tokens': 800,
         'temperature': 0.85,
     }).encode('utf-8')
 
     req = urllib.request.Request(
-        'https://aitunnel.ru/v1/chat/completions',
+        'https://api.aitunnel.ru/v1/chat/completions',
         data=payload,
         headers={
             'Authorization': f'Bearer {api_key}',

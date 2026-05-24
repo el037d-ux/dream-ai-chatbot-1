@@ -7,12 +7,7 @@ interface Message {
   content: string;
 }
 
-const SAMPLE_RESPONSES = [
-  `✨ **Архетипический анализ по Юнгу**\n\nВодная стихия в сновидениях — обращение к коллективному бессознательному. Океан символизирует материнское начало и скрытые аспекты Тени.\n\n🔮 **По Фрейду**\nПогружение в воду связывается с регрессией к пренатальному состоянию и желанием укрытия.\n\n💫 **Послание звёзд**\nВас ждёт внутренняя трансформация и важное решение, открывающее новый этап пути.`,
-  `🌑 **Символика Тени** (Юнг)\n\nТёмная фигура — архетип Тени, подавленные части личности, требующие интеграции.\n\n⚗️ **Психоанализ** (Фрейд)\nПреследование — конфликт между Эго и вытесненными желаниями.\n\n✨ **Мистическое послание**\nТо, от чего вы убегаете во сне — несёт ключ к вашей подлинной силе.`,
-  `🌙 **Анима/Анимус** (Юнг)\n\nПолёт — проявление архетипа Героя, стремление Эго преодолеть земные ограничения.\n\n🔥 **По Фрейду**\nПолёт связан с либидозной энергией и ощущением всемогущества.\n\n💜 **Предсказание**\nЗвёзды указывают на период творческого подъёма — доверьтесь интуиции.`,
-  `🪞 **Архетип Самости** (Юнг)\n\nЗеркало во сне — встреча с истинным «Я», процесс самопознания и индивидуации.\n\n🧠 **По Фрейду**\nОтражение символизирует нарциссический аспект — поиск подтверждения извне.\n\n🌟 **Послание**\nПришло время честно взглянуть на себя. Ответы, которые вы ищете — внутри вас.`,
-];
+const API_URL = 'https://functions.poehali.dev/287212b7-1f20-4ef7-9d1e-bed76a4bad55';
 
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
@@ -25,6 +20,7 @@ export default function ChatWidget() {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [pulse, setPulse] = useState(true);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -41,14 +37,38 @@ export default function ChatWidget() {
 
   const send = async () => {
     if (!input.trim() || loading) return;
+
     const userMsg: Message = { id: Date.now().toString(), role: 'user', content: input.trim() };
-    setMessages(prev => [...prev, userMsg]);
+    const updatedMessages = [...messages, userMsg];
+    setMessages(updatedMessages);
     setInput('');
     setLoading(true);
-    await new Promise(r => setTimeout(r, 1800));
-    const response = SAMPLE_RESPONSES[Math.floor(Math.random() * SAMPLE_RESPONSES.length)];
-    setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), role: 'assistant', content: response }]);
-    setLoading(false);
+    setError('');
+
+    try {
+      const apiMessages = updatedMessages
+        .filter(m => m.id !== '0')
+        .map(m => ({ role: m.role, content: m.content }));
+
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: apiMessages }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.answer) throw new Error('Нет ответа');
+
+      setMessages(prev => [...prev, {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: data.answer,
+      }]);
+    } catch {
+      setError('Звёзды молчат... Попробуйте ещё раз.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const formatContent = (text: string) => {
@@ -60,7 +80,6 @@ export default function ChatWidget() {
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
-      {/* Chat panel */}
       {open && (
         <div
           className="glass-strong border border-primary/30 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-scale-in"
@@ -77,7 +96,7 @@ export default function ChatWidget() {
             </div>
             <div className="flex-1">
               <div className="font-cormorant text-base font-semibold text-foreground leading-none">Морфей</div>
-              <div className="text-xs text-primary/70 font-raleway">Толкователь снов</div>
+              <div className="text-xs text-primary/70 font-raleway">Толкователь снов · ИИ</div>
             </div>
             <button
               onClick={() => setOpen(false)}
@@ -124,6 +143,12 @@ export default function ChatWidget() {
                     ))}
                   </div>
                 </div>
+              </div>
+            )}
+
+            {error && (
+              <div className="text-center text-xs text-muted-foreground font-raleway italic py-1">
+                {error}
               </div>
             )}
             <div ref={bottomRef} />
