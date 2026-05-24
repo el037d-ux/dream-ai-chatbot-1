@@ -10,7 +10,7 @@ interface Message {
   timestamp: Date;
 }
 
-const API_URL = 'https://functions.poehali.dev/287212b7-1f20-4ef7-9d1e-bed76a4bad55';
+const API_URL = 'https://functions.poehali.dev/5f709de2-ccfd-4b79-9f7c-cb0a8c2e4f09';
 const FREE_LIMIT = 3;
 
 const GREETINGS = [
@@ -78,7 +78,7 @@ export default function ChatPage({ onSubscribe }: ChatPageProps) {
         .filter(m => m.id !== '0')
         .map(m => ({ role: m.role, content: m.content }));
 
-      const body: Record<string, unknown> = { messages: apiMessages };
+      const body: Record<string, unknown> = { action: 'analyze', messages: apiMessages };
       if (user) body.user_id = user.user_id;
 
       const res = await fetch(API_URL, {

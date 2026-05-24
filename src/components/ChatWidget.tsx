@@ -7,7 +7,7 @@ interface Message {
   content: string;
 }
 
-const API_URL = 'https://functions.poehali.dev/287212b7-1f20-4ef7-9d1e-bed76a4bad55';
+const API_URL = 'https://functions.poehali.dev/5f709de2-ccfd-4b79-9f7c-cb0a8c2e4f09';
 
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
@@ -53,7 +53,7 @@ export default function ChatWidget() {
       const res = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: apiMessages }),
+        body: JSON.stringify({ action: 'analyze', messages: apiMessages }),
       });
 
       const data = await res.json();
