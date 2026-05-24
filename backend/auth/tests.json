@@ -1,0 +1,17 @@
+{
+  "tests": [
+    {
+      "name": "Регистрация нового пользователя",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "action": "register",
+        "email": "test_morpheus_001@test.com",
+        "password": "test123456"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {"token": "string", "email": "string"},
+      "bodyMatcher": "partial"
+    }
+  ]
+}
