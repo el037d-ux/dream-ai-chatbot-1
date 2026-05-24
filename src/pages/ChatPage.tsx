@@ -129,8 +129,8 @@ export default function ChatPage({ onSubscribe }: ChatPageProps) {
   const blocked = isBlocked();
 
   return (
-    <div className="flex flex-col h-screen pt-20">
-      <div className="flex-1 overflow-y-auto px-4 py-6">
+    <div className="flex flex-col pt-14 md:pt-20" style={{ height: '100dvh' }}>
+      <div className="flex-1 overflow-y-auto px-3 md:px-4 py-4 md:py-6 pb-safe" style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 8px)' }}>
         <div className="max-w-3xl mx-auto space-y-6">
           {messages.map((msg, idx) => (
             <div
@@ -175,7 +175,7 @@ export default function ChatPage({ onSubscribe }: ChatPageProps) {
 
       <SubscribeBanner requestsLeft={left} onSubscribe={onSubscribe} isBlocked={blocked} />
 
-      <div className="glass-strong border-t border-border/30 px-4 py-4">
+      <div className="glass-strong border-t border-border/30 px-3 md:px-4 py-3 md:py-4 mb-16 md:mb-0">
         <div className="max-w-3xl mx-auto">
           {!blocked && user && !user.has_subscription && (
             <div className="flex justify-end mb-2">

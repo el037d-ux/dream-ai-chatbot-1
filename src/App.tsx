@@ -45,8 +45,12 @@ function AppContent() {
       <StarsBackground />
       <div className="relative z-10">
         <Navigation active={page} onNavigate={setPage} />
-        {renderPage()}
-        <ChatWidget />
+        <div className="pb-0 md:pb-0" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0px)' }}>
+          {renderPage()}
+        </div>
+        <div className="hidden md:block">
+          <ChatWidget />
+        </div>
       </div>
     </div>
   );

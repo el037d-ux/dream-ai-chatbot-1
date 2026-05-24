@@ -68,6 +68,32 @@
   }
 }
 
+/* Hero background image */
+.hero-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("https://cdn.poehali.dev/projects/27ac383e-de3c-4d04-bda2-5818fbd8c423/bucket/11609e35-175b-40a8-b9e0-b8340d04cea9.png");
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  z-index: 0;
+}
+
+.hero-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    hsl(240 30% 4% / 0.5) 0%,
+    hsl(240 30% 4% / 0.7) 50%,
+    hsl(240 30% 4% / 0.92) 100%
+  );
+}
+
 /* Stars background */
 .stars-bg {
   position: fixed;
@@ -272,4 +298,12 @@
 .nav-item:hover::after,
 .nav-item.active::after {
   width: 100%;
+}
+
+/* Mobile: add bottom padding for pages (above bottom nav) */
+@media (max-width: 767px) {
+  .min-h-screen.pt-24 {
+    padding-top: 4rem;
+    padding-bottom: 5rem;
+  }
 }
