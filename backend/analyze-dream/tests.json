@@ -1,0 +1,15 @@
+{
+  "tests": [
+    {
+      "name": "Анализ сна",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "messages": [{"role": "user", "content": "Мне приснился тёмный лес и река"}]
+      },
+      "expectedStatus": 200,
+      "expectedBody": {"answer": "string"},
+      "bodyMatcher": "partial"
+    }
+  ]
+}
