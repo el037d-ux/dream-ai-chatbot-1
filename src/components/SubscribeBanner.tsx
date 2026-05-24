@@ -10,7 +10,7 @@ export default function SubscribeBanner({ requestsLeft, onSubscribe, isBlocked }
   if (requestsLeft > 1 && !isBlocked) return null;
 
   return (
-    <div className={`mx-4 mb-4 rounded-2xl p-4 border animate-fade-in-up ${
+    <div className={`mx-4 mb-4 rounded-2xl p-4 border animate-fade-in-up hidden md:block ${
       isBlocked
         ? 'bg-primary/10 border-primary/40'
         : 'bg-mystic-gold/5 border-mystic-gold/30'
