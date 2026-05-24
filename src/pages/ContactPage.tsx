@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import Icon from '@/components/ui/icon';
 
-export default function ContactPage() {
+interface ContactPageProps {
+  onNavigate?: (page: string) => void;
+}
+
+export default function ContactPage({ onNavigate }: ContactPageProps) {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [sent, setSent] = useState(false);
 
@@ -128,6 +132,14 @@ export default function ContactPage() {
                   <Icon name="Send" size={16} />
                   Отправить послание
                 </button>
+                <p className="text-xs text-muted-foreground font-raleway text-center">
+                  Отправляя форму, вы соглашаетесь с{' '}
+                  {onNavigate ? (
+                    <button type="button" onClick={() => onNavigate('privacy')} className="text-primary underline hover:no-underline">
+                      Политикой конфиденциальности
+                    </button>
+                  ) : 'Политикой конфиденциальности'}
+                </p>
               </form>
             )}
           </div>

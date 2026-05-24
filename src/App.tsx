@@ -14,6 +14,7 @@ import ProfilePage from '@/pages/ProfilePage';
 import AboutPage from '@/pages/AboutPage';
 import ContactPage from '@/pages/ContactPage';
 import SubscribePage from '@/pages/SubscribePage';
+import PrivacyPage from '@/pages/PrivacyPage';
 
 const queryClient = new QueryClient();
 
@@ -34,8 +35,9 @@ function AppContent() {
       case 'dictionary': return <DictionaryPage />;
       case 'profile': return <ProfilePage onNavigate={setPage} />;
       case 'about': return <AboutPage />;
-      case 'contact': return <ContactPage />;
+      case 'contact': return <ContactPage onNavigate={setPage} />;
       case 'subscribe': return <SubscribePage onBack={() => setPage('chat')} />;
+      case 'privacy': return <PrivacyPage />;
       default: return <ChatPage onSubscribe={() => setPage('subscribe')} />;
     }
   };

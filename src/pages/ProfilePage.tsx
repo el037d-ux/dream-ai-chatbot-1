@@ -73,6 +73,18 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
             {authError && (
               <div className="text-sm text-red-400 font-raleway bg-red-400/10 border border-red-400/20 rounded-xl px-4 py-3">{authError}</div>
             )}
+            {mode === 'register' && (
+              <p className="text-xs text-muted-foreground font-raleway leading-relaxed">
+                Нажимая «Создать аккаунт», вы даёте согласие на обработку персональных данных в соответствии с{' '}
+                <button
+                  type="button"
+                  onClick={() => onNavigate('privacy')}
+                  className="text-primary underline hover:no-underline transition-all"
+                >
+                  Политикой конфиденциальности
+                </button>
+              </p>
+            )}
             <button
               type="submit" disabled={authLoading}
               className="w-full bg-primary text-primary-foreground font-raleway text-sm py-3 rounded-xl hover:bg-primary/80 disabled:opacity-50 transition-all flex items-center justify-center gap-2 animate-glow"
