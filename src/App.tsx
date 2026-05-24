@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import StarsBackground from '@/components/StarsBackground';
 import Navigation from '@/components/Navigation';
+import ChatWidget from '@/components/ChatWidget';
 import ChatPage from '@/pages/ChatPage';
 import HistoryPage from '@/pages/HistoryPage';
 import DictionaryPage from '@/pages/DictionaryPage';
@@ -35,6 +36,7 @@ function AppContent() {
       <div className="relative z-10">
         <Navigation active={page} onNavigate={setPage} />
         {renderPage()}
+        <ChatWidget />
       </div>
     </div>
   );
