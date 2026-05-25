@@ -15,9 +15,7 @@ export default function ContactPage({ onNavigate }: ContactPageProps) {
   };
 
   const contacts = [
-    { icon: 'Mail', label: 'Email', value: 'hello@morpheus.app', href: 'mailto:hello@morpheus.app' },
-    { icon: 'MessageCircle', label: 'Telegram', value: '@morpheus_dreams', href: '#' },
-    { icon: 'Instagram', label: 'Instagram', value: '@morpheus.dreams', href: '#' },
+    { icon: 'Mail', label: 'Email', value: 'en1350@rambler.ru', href: 'mailto:en1350@rambler.ru' },
   ];
 
   return (
@@ -58,7 +56,7 @@ export default function ContactPage({ onNavigate }: ContactPageProps) {
             <div className="glass border border-border/30 rounded-2xl p-5 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
               <div className="text-2xl mb-3">⏰</div>
               <h3 className="font-cormorant text-xl text-foreground mb-2">Время ответа</h3>
-              <p className="text-sm text-muted-foreground font-raleway">Обычно отвечаем в течение 24 часов. Срочные вопросы — через Telegram.</p>
+              <p className="text-sm text-muted-foreground font-raleway">Обычно отвечаем в течение 24 часов.</p>
             </div>
           </div>
 
