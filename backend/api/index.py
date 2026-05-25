@@ -178,6 +178,7 @@ def handle_create_payment(body: dict) -> dict:
                        'vat_code': 1, 'payment_mode': 'full_payment', 'payment_subject': 'service'}]
         }
 
+    print(f"SHOP_ID='{SHOP_ID}' len={len(SHOP_ID)} | YK_SECRET prefix='{YK_SECRET[:10]}' len={len(YK_SECRET)}")
     creds = base64.b64encode(f'{SHOP_ID}:{YK_SECRET}'.encode()).decode()
     req = urllib.request.Request('https://api.yookassa.ru/v3/payments',
         data=json.dumps(pdata).encode(),
