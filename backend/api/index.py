@@ -232,7 +232,7 @@ def handle_webhook(body: dict) -> dict:
 
 # ── Main router ───────────────────────────────────────────────────────────────
 def handler(event: dict, context) -> dict:
-    """Единая точка входа. Роутинг по полю action в теле запроса."""
+    """Единая точка входа. Роутинг по полю action в теле запроса. v2"""
 
     if event.get('httpMethod') == 'OPTIONS':
         return {'statusCode': 200, 'headers': CORS, 'body': ''}
