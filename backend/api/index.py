@@ -12,8 +12,8 @@ from datetime import datetime, timedelta
 # ── Config ────────────────────────────────────────────────────────────────────
 DB_URL     = os.environ.get('DATABASE_URL', '')
 SCHEMA     = os.environ.get('MAIN_DB_SCHEMA', 'public')
-SHOP_ID    = os.environ.get('YOOKASSA_SHOP_ID', '')
-YK_SECRET  = os.environ.get('API', '')
+SHOP_ID    = '1365310'
+YK_SECRET  = 'live_ljq-vesr-vSCdEt08daoW88CbTRd-ZkwOzRgiKfHml0'
 AI_KEY     = os.environ.get('AITUNNEL_API_KEY', '')
 FREE_LIMIT = 3
 PRICE      = '119.00'
@@ -178,7 +178,6 @@ def handle_create_payment(body: dict) -> dict:
                        'vat_code': 1, 'payment_mode': 'full_payment', 'payment_subject': 'service'}]
         }
 
-    print(f"SHOP_ID='{SHOP_ID}' len={len(SHOP_ID)} | YK_SECRET prefix='{YK_SECRET[:10]}' len={len(YK_SECRET)}")
     creds = base64.b64encode(f'{SHOP_ID}:{YK_SECRET}'.encode()).decode()
     req = urllib.request.Request('https://api.yookassa.ru/v3/payments',
         data=json.dumps(pdata).encode(),
