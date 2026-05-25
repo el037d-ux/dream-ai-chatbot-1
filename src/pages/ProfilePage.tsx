@@ -2,13 +2,17 @@ import { useState } from 'react';
 import Icon from '@/components/ui/icon';
 import { useAuth } from '@/context/AuthContext';
 
+const API_URL = 'https://functions.poehali.dev/5f709de2-ccfd-4b79-9f7c-cb0a8c2e4f09';
+
 interface ProfilePageProps {
   onNavigate: (page: string) => void;
 }
 
 export default function ProfilePage({ onNavigate }: ProfilePageProps) {
-  const { user, login, register, logout } = useAuth();
+  const { user, login, register, logout, updateUsage } = useAuth();
   const [mode, setMode] = useState<'login' | 'register'>('login');
+  const [refreshing, setRefreshing] = useState(false);
+  const [refreshMsg, setRefreshMsg] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
@@ -131,8 +135,8 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
             </div>
           </div>
 
-          {!user.has_subscription && (
-            <div className="mt-4">
+          <div className="mt-4 space-y-2">
+            {!user.has_subscription && (
               <button
                 onClick={() => onNavigate('subscribe')}
                 className="w-full bg-primary/10 border border-primary/30 text-primary font-raleway text-sm py-2.5 rounded-xl hover:bg-primary/20 transition-all flex items-center justify-center gap-2"
@@ -140,8 +144,39 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
                 <Icon name="Sparkles" size={14} />
                 Оформить подписку — 119 ₽ / 30 дней
               </button>
-            </div>
-          )}
+            )}
+            <button
+              disabled={refreshing}
+              onClick={async () => {
+                setRefreshing(true); setRefreshMsg('');
+                try {
+                  const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'check_subscription', user_id: user.user_id }),
+                  });
+                  const data = await res.json();
+                  updateUsage(data.free_requests_used, data.has_subscription);
+                  setRefreshMsg(data.has_subscription ? '✦ Подписка активна!' : 'Активной подписки не найдено');
+                } catch {
+                  setRefreshMsg('Ошибка проверки');
+                } finally {
+                  setRefreshing(false);
+                }
+              }}
+              className="w-full glass border border-border/30 text-muted-foreground font-raleway text-sm py-2.5 rounded-xl hover:border-primary/30 hover:text-foreground transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              {refreshing
+                ? <><div className="w-3.5 h-3.5 border-2 border-muted-foreground/30 border-t-muted-foreground rounded-full animate-spin" />Проверяю...</>
+                : <><Icon name="RefreshCw" size={14} />Обновить статус подписки</>
+              }
+            </button>
+            {refreshMsg && (
+              <p className={`text-xs text-center font-raleway ${refreshMsg.includes('✦') ? 'text-primary' : 'text-muted-foreground'}`}>
+                {refreshMsg}
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Settings */}

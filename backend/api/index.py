@@ -243,6 +243,28 @@ def handle_webhook(body: dict) -> dict:
     return {'statusCode': 200, 'body': json.dumps({'ok': True})}
 
 
+def handle_check_subscription(body: dict) -> dict:
+    """Проверяет актуальный статус подписки пользователя."""
+    user_id = body.get('user_id')
+    if not user_id:
+        return {'statusCode': 400, 'body': json.dumps({'error': 'Требуется user_id'})}
+    conn = get_conn(); cur = conn.cursor()
+    cur.execute('SELECT free_requests_used FROM users WHERE id = %s', (user_id,))
+    row = cur.fetchone()
+    if not row:
+        cur.close(); conn.close()
+        return {'statusCode': 404, 'body': json.dumps({'error': 'Пользователь не найден'})}
+    free_used = row[0]
+    cur.execute("SELECT expires_at FROM subscriptions WHERE user_id=%s AND status='active' AND expires_at>NOW() ORDER BY expires_at DESC LIMIT 1", (user_id,))
+    sub = cur.fetchone()
+    cur.close(); conn.close()
+    return {'statusCode': 200, 'body': json.dumps({
+        'free_requests_used': free_used,
+        'has_subscription': sub is not None,
+        'subscription_expires': sub[0].isoformat() if sub else None,
+    }, ensure_ascii=False)}
+
+
 # ── Main router ───────────────────────────────────────────────────────────────
 def handler(event: dict, context) -> dict:
     """Единая точка входа. Роутинг по полю action в теле запроса. v3"""
@@ -261,6 +283,8 @@ def handler(event: dict, context) -> dict:
         result = handle_create_payment(body)
     elif action == 'webhook':
         result = handle_webhook(body)
+    elif action == 'check_subscription':
+        result = handle_check_subscription(body)
     else:
         result = {'statusCode': 400, 'body': json.dumps({'error': f'Неизвестный action: {action}'})}
 
