@@ -57,7 +57,7 @@ export default function ChatPage({ onSubscribe }: ChatPageProps) {
 
   const isBlocked = () => {
     if (user) return !canSendRequest();
-    return guestUsed >= FREE_LIMIT;
+    return false;
   };
 
   const handleSend = async () => {
@@ -193,46 +193,34 @@ export default function ChatPage({ onSubscribe }: ChatPageProps) {
       <div className="glass-strong border-t border-border/30 px-3 md:px-4 py-3 md:py-4
         fixed md:relative bottom-[64px] md:bottom-auto left-0 right-0 z-40 md:z-auto">
         <div className="max-w-3xl mx-auto">
-          {!user ? (
-            <button
-              onClick={() => setShowAuth(true)}
-              className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-raleway text-sm font-medium flex items-center justify-center gap-2 hover:bg-primary/80 transition-all animate-glow"
-            >
-              <Icon name="LogIn" size={16} />
-              Войдите, чтобы общаться с Морфеем
-            </button>
-          ) : (
-            <>
-              {!blocked && !user.has_subscription && (
-                <div className="flex justify-end mb-2">
-                  <span className="text-xs text-muted-foreground font-raleway">
-                    Бесплатных: <span className="text-primary font-medium">{left}</span> из {FREE_LIMIT}
-                  </span>
-                </div>
-              )}
-              <div className="flex gap-3 items-end">
-                <div className="flex-1 relative">
-                  <textarea
-                    value={input}
-                    onChange={e => setInput(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder={blocked ? 'Оформите подписку, чтобы продолжить...' : placeholder}
-                    disabled={blocked}
-                    rows={2}
-                    className="w-full bg-input/50 border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 resize-none focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all font-raleway disabled:opacity-50 disabled:cursor-not-allowed"
-                  />
-                  {!blocked && <div className="absolute bottom-2 right-3 text-xs text-muted-foreground/40">Enter</div>}
-                </div>
-                <button
-                  onClick={blocked ? onSubscribe : handleSend}
-                  disabled={!blocked && (!input.trim() || isLoading)}
-                  className="w-12 h-12 rounded-xl bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/80 disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-105 active:scale-95 animate-glow"
-                >
-                  <Icon name={blocked ? 'Lock' : 'Send'} size={18} />
-                </button>
-              </div>
-            </>
+          {!blocked && user && !user.has_subscription && (
+            <div className="flex justify-end mb-2">
+              <span className="text-xs text-muted-foreground font-raleway">
+                Бесплатных: <span className="text-primary font-medium">{left}</span> из {FREE_LIMIT}
+              </span>
+            </div>
           )}
+          <div className="flex gap-3 items-end">
+            <div className="flex-1 relative">
+              <textarea
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder={blocked ? 'Оформите подписку, чтобы продолжить...' : placeholder}
+                disabled={blocked}
+                rows={2}
+                className="w-full bg-input/50 border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 resize-none focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all font-raleway disabled:opacity-50 disabled:cursor-not-allowed"
+              />
+              {!blocked && <div className="absolute bottom-2 right-3 text-xs text-muted-foreground/40">Enter</div>}
+            </div>
+            <button
+              onClick={blocked ? onSubscribe : handleSend}
+              disabled={!blocked && (!input.trim() || isLoading)}
+              className="w-12 h-12 rounded-xl bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/80 disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-105 active:scale-95 animate-glow"
+            >
+              <Icon name={blocked ? 'Lock' : 'Send'} size={18} />
+            </button>
+          </div>
           <p className="text-center text-xs text-muted-foreground/40 mt-2 font-raleway">✦ Анализ основан на теориях Юнга и Фрейда ✦</p>
         </div>
       </div>
