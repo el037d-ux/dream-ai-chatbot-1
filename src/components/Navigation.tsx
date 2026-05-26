@@ -7,19 +7,13 @@ interface NavProps {
 
 const navItems = [
   { id: 'chat', label: 'Предсказание', icon: 'Moon' },
-  { id: 'history', label: 'История', icon: 'BookOpen' },
-  { id: 'dictionary', label: 'Словарь', icon: 'Library' },
   { id: 'profile', label: 'Кабинет', icon: 'User' },
-  { id: 'about', label: 'О нас', icon: 'Info' },
   { id: 'contact', label: 'Контакты', icon: 'Mail' },
 ];
 
 const mobileItems = [
   { id: 'chat', label: 'Чат', icon: 'Moon' },
-  { id: 'history', label: 'История', icon: 'BookOpen' },
-  { id: 'dictionary', label: 'Словарь', icon: 'Library' },
   { id: 'profile', label: 'Кабинет', icon: 'User' },
-  { id: 'about', label: 'О нас', icon: 'Info' },
 ];
 
 export default function Navigation({ active, onNavigate }: NavProps) {
