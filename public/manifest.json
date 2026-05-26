@@ -1,0 +1,25 @@
+{
+  "name": "Морфей — Толкователь Снов",
+  "short_name": "Морфей",
+  "description": "Мистический ИИ-толкователь снов. Анализ по Юнгу и Фрейду.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d0614",
+  "theme_color": "#1a0a2e",
+  "orientation": "portrait",
+  "lang": "ru",
+  "icons": [
+    {
+      "src": "https://cdn.poehali.dev/projects/27ac383e-de3c-4d04-bda2-5818fbd8c423/files/2be48c51-deb0-459c-b0a2-59d0ec59813f.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://cdn.poehali.dev/projects/27ac383e-de3c-4d04-bda2-5818fbd8c423/files/2be48c51-deb0-459c-b0a2-59d0ec59813f.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}

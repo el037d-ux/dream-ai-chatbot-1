@@ -58,6 +58,9 @@
   body {
     @apply bg-background text-foreground;
     font-family: "Raleway", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
   }
 
   h1,
@@ -66,6 +69,27 @@
   h4 {
     font-family: "Cormorant Garamond", serif;
   }
+}
+
+/* Mobile: убираем выделение при тапе на кнопки */
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Safe area для iOS notch / Android камеры */
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Скролл без резиновости на мобильных */
+html {
+  overscroll-behavior: none;
+  height: 100%;
 }
 
 /* Hero background image */
