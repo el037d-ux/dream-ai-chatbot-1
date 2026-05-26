@@ -199,89 +199,88 @@ export default function MysticWidgets() {
       {/* Верхний ряд: Луна + Гороскоп */}
       <div className="flex gap-3">
 
-      {/* Лунный календарь */}
-      <div className="flex-1 glass border border-border/30 rounded-2xl px-4 py-3 cursor-pointer hover:border-primary/30 transition-all"
-        onClick={() => setExpanded(expanded === 'moon' ? null : 'moon')}>
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2.5">
-            <span className="text-2xl">{moon.emoji}</span>
-            <div>
-              <div className="text-xs text-muted-foreground font-raleway uppercase tracking-widest leading-none mb-0.5">Луна</div>
-              <div className="text-sm font-raleway text-foreground font-medium">{moon.name} · {moon.day} день</div>
+        {/* Лунный календарь */}
+        <div
+          className="flex-1 glass border border-border/30 rounded-2xl px-4 py-3 cursor-pointer hover:border-primary/30 transition-all"
+          onClick={() => setExpanded(expanded === 'moon' ? null : 'moon')}
+        >
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2.5">
+              <span className="text-2xl">{moon.emoji}</span>
+              <div>
+                <div className="text-xs text-muted-foreground font-raleway uppercase tracking-widest leading-none mb-0.5">Луна</div>
+                <div className="text-sm font-raleway text-foreground font-medium">{moon.name} · {moon.day} день</div>
+              </div>
             </div>
+            <Icon name={expanded === 'moon' ? 'ChevronUp' : 'ChevronDown'} size={14} className="text-muted-foreground flex-shrink-0" />
           </div>
-          <Icon name={expanded === 'moon' ? 'ChevronUp' : 'ChevronDown'} size={14} className="text-muted-foreground flex-shrink-0" />
+          {expanded === 'moon' && (
+            <div className="mt-3 pt-3 border-t border-border/20 space-y-2 animate-fade-in-up">
+              <div className="flex items-center gap-2">
+                <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
+                  <div className="h-full rounded-full bg-primary/60 transition-all" style={{ width: `${moon.illumination}%` }} />
+                </div>
+                <span className="text-xs text-muted-foreground font-raleway">{moon.illumination}%</span>
+              </div>
+              <div className="text-xs text-muted-foreground font-raleway">
+                {LUNAR_MEANINGS[moon.day] || 'День луны'}
+              </div>
+              <div className="text-xs text-primary/80 font-raleway italic">✦ {moon.advice}</div>
+            </div>
+          )}
         </div>
 
-        {expanded === 'moon' && (
-          <div className="mt-3 pt-3 border-t border-border/20 space-y-2 animate-fade-in-up">
-            <div className="flex items-center gap-2">
-              <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
-                <div className="h-full rounded-full bg-primary/60 transition-all" style={{ width: `${moon.illumination}%` }} />
+        {/* Гороскоп */}
+        <div
+          className="flex-1 glass border border-border/30 rounded-2xl px-4 py-3 cursor-pointer hover:border-primary/30 transition-all"
+          onClick={() => { setExpanded(expanded === 'horoscope' ? null : 'horoscope'); setShowSignPicker(false); }}
+        >
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2.5">
+              <span className="text-2xl">{selectedSign.emoji}</span>
+              <div>
+                <div className="text-xs text-muted-foreground font-raleway uppercase tracking-widest leading-none mb-0.5">Гороскоп снов</div>
+                <div className="text-sm font-raleway text-foreground font-medium">{selectedSign.name} · {forecast.energy}</div>
               </div>
-              <span className="text-xs text-muted-foreground font-raleway">{moon.illumination}%</span>
             </div>
-            <div className="text-xs text-muted-foreground font-raleway">
-              {LUNAR_MEANINGS[moon.day] || 'День луны'}
-            </div>
-            <div className="text-xs text-primary/80 font-raleway italic">✦ {moon.advice}</div>
+            <Icon name={expanded === 'horoscope' ? 'ChevronUp' : 'ChevronDown'} size={14} className="text-muted-foreground flex-shrink-0" />
           </div>
-        )}
-      </div>
-
-      {/* Гороскоп */}
-      <div className="flex-1 glass border border-border/30 rounded-2xl px-4 py-3 cursor-pointer hover:border-primary/30 transition-all"
-        onClick={() => { setExpanded(expanded === 'horoscope' ? null : 'horoscope'); setShowSignPicker(false); }}>
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2.5">
-            <span className="text-2xl">{selectedSign.emoji}</span>
-            <div>
-              <div className="text-xs text-muted-foreground font-raleway uppercase tracking-widest leading-none mb-0.5">Гороскоп снов</div>
-              <div className="text-sm font-raleway text-foreground font-medium">{selectedSign.name} · {forecast.energy}</div>
+          {expanded === 'horoscope' && (
+            <div className="mt-3 pt-3 border-t border-border/20 space-y-3 animate-fade-in-up" onClick={e => e.stopPropagation()}>
+              <div className="text-xs font-raleway">
+                <span className="text-foreground/80">{forecast.dream}</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs font-raleway">
+                <span className="text-muted-foreground">Символ ночи:</span>
+                <span className="font-medium text-primary">✦ {forecast.symbol}</span>
+              </div>
+              <button
+                className="text-xs text-muted-foreground hover:text-foreground font-raleway flex items-center gap-1.5 transition-colors"
+                onClick={() => setShowSignPicker(!showSignPicker)}
+              >
+                <Icon name="RefreshCw" size={11} />
+                Сменить знак
+              </button>
+              {showSignPicker && (
+                <div className="grid grid-cols-6 gap-1.5 pt-1">
+                  {SIGNS.map(s => (
+                    <button
+                      key={s.key}
+                      onClick={() => { setSelectedSign(s); setShowSignPicker(false); }}
+                      title={s.name}
+                      className={`text-center py-1 rounded-lg text-base transition-all hover:bg-primary/20
+                        ${selectedSign.key === s.key ? 'bg-primary/30 ring-1 ring-primary/50' : ''}`}
+                    >
+                      {s.emoji}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-          </div>
-          <Icon name={expanded === 'horoscope' ? 'ChevronUp' : 'ChevronDown'} size={14} className="text-muted-foreground flex-shrink-0" />
+          )}
         </div>
 
-        {expanded === 'horoscope' && (
-          <div className="mt-3 pt-3 border-t border-border/20 space-y-3 animate-fade-in-up" onClick={e => e.stopPropagation()}>
-            <div className="text-xs text-muted-foreground font-raleway">
-              <span className="text-foreground/80">{forecast.dream}</span>
-            </div>
-            <div className="flex items-center gap-2 text-xs text-primary/80 font-raleway">
-              <span className="text-muted-foreground">Символ ночи:</span>
-              <span className="font-medium text-primary">✦ {forecast.symbol}</span>
-            </div>
-
-            {/* Смена знака */}
-            <button
-              className="text-xs text-muted-foreground hover:text-foreground font-raleway flex items-center gap-1.5 transition-colors"
-              onClick={() => setShowSignPicker(!showSignPicker)}
-            >
-              <Icon name="RefreshCw" size={11} />
-              Сменить знак
-            </button>
-
-            {showSignPicker && (
-              <div className="grid grid-cols-6 gap-1.5 pt-1">
-                {SIGNS.map(s => (
-                  <button
-                    key={s.key}
-                    onClick={() => { setSelectedSign(s); setShowSignPicker(false); }}
-                    title={s.name}
-                    className={`text-center py-1 rounded-lg text-base transition-all hover:bg-primary/20
-                      ${selectedSign.key === s.key ? 'bg-primary/30 ring-1 ring-primary/50' : ''}`}
-                  >
-                    {s.emoji}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
       </div>
-
-      </div>{/* конец верхнего ряда */}
 
       {/* Мудрая минутка */}
       <div
@@ -302,12 +301,9 @@ export default function MysticWidgets() {
           </div>
           <Icon name={expanded === 'wise' ? 'ChevronUp' : 'ChevronDown'} size={14} className="text-muted-foreground flex-shrink-0" />
         </div>
-
         {expanded === 'wise' && (
           <div className="mt-3 pt-3 border-t border-border/20 animate-fade-in-up">
-            <p className="text-sm font-raleway text-foreground/90 leading-relaxed">
-              ✦ {quote.text}
-            </p>
+            <p className="text-sm font-raleway text-foreground/90 leading-relaxed">✦ {quote.text}</p>
             <p className="text-xs text-muted-foreground font-raleway mt-2">
               Совет #{quote.number} из 30 — меняется каждый день
             </p>
