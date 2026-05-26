@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import SubscribeBanner from '@/components/SubscribeBanner';
 import MysticWidgets from '@/components/MysticWidgets';
 import AuthPage from '@/pages/AuthPage';
-import SleepingCat from '@/components/SleepingCat';
+
 
 interface Message {
   id: string;
@@ -146,7 +146,6 @@ export default function ChatPage({ onSubscribe }: ChatPageProps) {
         </div>
       </div>
 
-      {messages.length <= 1 && <SleepingCat />}
 
       <div className="flex-1 overflow-y-auto px-3 md:px-4 py-2 md:py-4 pb-[140px] md:pb-6">
         <div className="max-w-3xl mx-auto space-y-6">
