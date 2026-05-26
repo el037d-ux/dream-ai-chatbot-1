@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import Icon from '@/components/ui/icon';
 import { useAuth } from '@/context/AuthContext';
 import SubscribeBanner from '@/components/SubscribeBanner';
+import MysticWidgets from '@/components/MysticWidgets';
 
 interface Message {
   id: string;
@@ -130,6 +131,7 @@ export default function ChatPage({ onSubscribe }: ChatPageProps) {
 
   return (
     <div className="flex flex-col pt-14 md:pt-20" style={{ height: '100dvh' }}>
+      <MysticWidgets />
       <div className="flex-1 overflow-y-auto px-3 md:px-4 py-4 md:py-6 pb-[140px] md:pb-6">
         <div className="max-w-3xl mx-auto space-y-6">
           {messages.map((msg, idx) => (
