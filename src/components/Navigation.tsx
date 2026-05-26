@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import Icon from '@/components/ui/icon';
 
 interface NavProps {
@@ -17,6 +18,25 @@ const mobileItems = [
 ];
 
 export default function Navigation({ active, onNavigate }: NavProps) {
+  const [installPrompt, setInstallPrompt] = useState<Event | null>(null);
+  const [installed, setInstalled] = useState(false);
+
+  useEffect(() => {
+    const handler = (e: Event) => { e.preventDefault(); setInstallPrompt(e); };
+    window.addEventListener('beforeinstallprompt', handler);
+    window.addEventListener('appinstalled', () => setInstalled(true));
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstall = () => {
+    if (!installPrompt) return;
+    const prompt = installPrompt as Event & { prompt: () => void; userChoice: Promise<{ outcome: string }> };
+    prompt.prompt();
+    prompt.userChoice.then(() => setInstallPrompt(null));
+  };
+
+  const showInstall = !!installPrompt && !installed;
+
   return (
     <>
       {/* Desktop top nav */}
@@ -33,6 +53,15 @@ export default function Navigation({ active, onNavigate }: NavProps) {
           </button>
 
           <div className="flex items-center gap-1">
+            {showInstall && (
+              <button
+                onClick={handleInstall}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-raleway font-medium border border-primary/40 text-primary bg-primary/10 hover:bg-primary/20 transition-all duration-300 mr-2"
+              >
+                <Icon name="Download" fallback="Circle" size={13} />
+                Установить приложение
+              </button>
+            )}
             {navItems.map((item) => (
               <button
                 key={item.id}
@@ -62,12 +91,23 @@ export default function Navigation({ active, onNavigate }: NavProps) {
             <div className="text-xs text-muted-foreground font-raleway tracking-wider uppercase" style={{ fontSize: 9 }}>Толкователь снов</div>
           </div>
         </button>
-        <button
-          onClick={() => onNavigate('profile')}
-          className={`p-2 rounded-xl transition-all ${active === 'profile' ? 'text-primary bg-primary/10' : 'text-muted-foreground'}`}
-        >
-          <Icon name="User" fallback="Circle" size={20} />
-        </button>
+        <div className="flex items-center gap-1">
+          {showInstall && (
+            <button
+              onClick={handleInstall}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-raleway font-medium border border-primary/40 text-primary bg-primary/10 active:scale-95 transition-all"
+            >
+              <Icon name="Download" fallback="Circle" size={13} />
+              Установить
+            </button>
+          )}
+          <button
+            onClick={() => onNavigate('profile')}
+            className={`p-2 rounded-xl transition-all ${active === 'profile' ? 'text-primary bg-primary/10' : 'text-muted-foreground'}`}
+          >
+            <Icon name="User" fallback="Circle" size={20} />
+          </button>
+        </div>
       </div>
 
       {/* Mobile bottom nav */}
