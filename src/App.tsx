@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,11 +16,38 @@ import ContactPage from '@/pages/ContactPage';
 import SubscribePage from '@/pages/SubscribePage';
 import PrivacyPage from '@/pages/PrivacyPage';
 
+const API_URL = 'https://functions.poehali.dev/5f709de2-ccfd-4b79-9f7c-cb0a8c2e4f09';
+
 const queryClient = new QueryClient();
 
 function AppContent() {
   const [page, setPage] = useState('chat');
-  const { user, loading } = useAuth();
+  const { user, loading, updateUsage } = useAuth();
+  const [paymentMsg, setPaymentMsg] = useState('');
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('payment_success') === '1' && user) {
+      window.history.replaceState({}, '', window.location.pathname);
+      setPaymentMsg('Проверяем платёж...');
+      fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'check_payment', user_id: user.user_id }),
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.status === 'succeeded') {
+            updateUsage(user.free_requests_used, true);
+            setPaymentMsg('✦ Подписка активирована! Добро пожаловать в мир снов без границ.');
+          } else {
+            setPaymentMsg('Платёж обрабатывается. Если подписка не появилась — нажмите «Обновить статус» в профиле.');
+          }
+          setTimeout(() => setPaymentMsg(''), 7000);
+        })
+        .catch(() => setPaymentMsg(''));
+    }
+  }, [user]);
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-background">
@@ -46,6 +73,12 @@ function AppContent() {
     <div className="relative min-h-screen bg-background overflow-x-hidden">
       <StarsBackground />
       <div className="relative z-10">
+        {paymentMsg && (
+          <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-2xl border text-sm font-raleway text-center shadow-lg max-w-sm w-[90%] transition-all
+            ${paymentMsg.includes('✦') ? 'bg-primary/20 border-primary/50 text-primary' : 'bg-muted border-border text-foreground'}`}>
+            {paymentMsg}
+          </div>
+        )}
         <Navigation active={page} onNavigate={setPage} />
         <div className="pb-0 md:pb-0" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0px)' }}>
           {renderPage()}
