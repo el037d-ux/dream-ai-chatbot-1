@@ -36,6 +36,46 @@ const LUNAR_MEANINGS: Record<number, string> = {
   28: 'День прощения', 29: 'День растворения', 30: 'День тишины',
 };
 
+// ── Мудрая минутка ────────────────────────────────────────────────────────────
+const WISE_QUOTES = [
+  'Ты не обязан быть идеальным — достаточно быть настоящим.',
+  'Твоя ценность не зависит от лайков, оценок или чужого мнения.',
+  'Разрешай себе отдыхать: пауза — это часть пути, а не ошибка.',
+  'Говори с собой так, как говорил бы с лучшим другом.',
+  'Маленькие шаги каждый день важнее одного грандиозного рывка.',
+  'Эмоции — это сигналы, а не приказы: почувствуй, но не действуй на автомате.',
+  '«Я не могу» часто означает «Я пока не умею» — добавь слово «пока».',
+  'Сравнивай себя только с собой вчерашним.',
+  'Негативная мысль — не факт. Спроси: «А что, если всё иначе?»',
+  'Благодарность меняет фокус: найди 3 хорошие вещи даже в трудный день.',
+  'Умение слушать — важнее умения говорить.',
+  'Говори «нет» без чувства вины — это защита твоих границ.',
+  'Конфликт — не война, а возможность понять друг друга глубже.',
+  'Люди запоминают не твои слова, а то, как ты заставил их себя чувствовать.',
+  'Прощать — не значит забывать. Это значит освободить себя от груза.',
+  'Ошибка — это не провал, а данные для следующего шага.',
+  'Ставь цели, которые вдохновляют, а не пугают.',
+  'Учись не для оценки, а для жизни — знания остаются с тобой.',
+  'Не бойся менять направление: путь важнее точки старта.',
+  'Твой темп — это нормально. Не спеши, не отставай — иди своим ритмом.',
+  'Сон, вода и движение — база, без которой сложно быть собой.',
+  'Цифровой детокс — это не наказание, а забота о внимании.',
+  'Дыши глубже, когда тревожно: 4 секунды вдох — 6 выдох.',
+  'Хобби — это не роскошь, а способ восстановить энергию.',
+  'Проси помощи, когда трудно. Это признак силы, а не слабости.',
+  'Делай добро тихо — оно всё равно вернётся.',
+  'Будь тем человеком, которому ты сам хотел бы доверять.',
+  'Живи так, чтобы сегодня вечером тебе было спокойно за этот день.',
+  'Мечтай смело, но действуй конкретно.',
+  'Ты уже достаточно хорош. Просто помни об этом. 💫',
+];
+
+function getDailyQuote(date: Date): { text: string; number: number } {
+  const day = date.getDate();
+  const idx = (day - 1) % WISE_QUOTES.length;
+  return { text: WISE_QUOTES[idx], number: idx + 1 };
+}
+
 // ── Гороскоп ──────────────────────────────────────────────────────────────────
 const SIGNS = [
   { name: 'Овен',      emoji: '♈', dates: 'Mar 21 – Apr 19', key: 'aries' },
@@ -146,14 +186,18 @@ export default function MysticWidgets() {
   const moon = getMoonPhase(today);
   const currentSign = getCurrentSign(today);
 
-  const [expanded, setExpanded] = useState<'horoscope' | 'moon' | null>(null);
+  const [expanded, setExpanded] = useState<'horoscope' | 'moon' | 'wise' | null>(null);
   const [selectedSign, setSelectedSign] = useState(currentSign);
   const [showSignPicker, setShowSignPicker] = useState(false);
 
   const forecast = getDreamForecast(selectedSign.key, today);
+  const quote = getDailyQuote(today);
 
   return (
-    <div className="max-w-3xl mx-auto px-3 md:px-4 pt-3 pb-1 flex gap-3">
+    <div className="max-w-3xl mx-auto px-3 md:px-4 pt-3 pb-1 flex flex-col gap-3">
+
+      {/* Верхний ряд: Луна + Гороскоп */}
+      <div className="flex gap-3">
 
       {/* Лунный календарь */}
       <div className="flex-1 glass border border-border/30 rounded-2xl px-4 py-3 cursor-pointer hover:border-primary/30 transition-all"
@@ -233,6 +277,40 @@ export default function MysticWidgets() {
                 ))}
               </div>
             )}
+          </div>
+        )}
+      </div>
+
+      </div>{/* конец верхнего ряда */}
+
+      {/* Мудрая минутка */}
+      <div
+        className="glass border border-border/30 rounded-2xl px-4 py-3 cursor-pointer hover:border-primary/30 transition-all"
+        onClick={() => setExpanded(expanded === 'wise' ? null : 'wise')}
+      >
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span className="text-2xl flex-shrink-0">💫</span>
+            <div className="min-w-0">
+              <div className="text-xs text-muted-foreground font-raleway uppercase tracking-widest leading-none mb-0.5">
+                Мудрая минутка · {today.getDate()} число
+              </div>
+              <div className="text-sm font-raleway text-foreground font-medium truncate">
+                {quote.text}
+              </div>
+            </div>
+          </div>
+          <Icon name={expanded === 'wise' ? 'ChevronUp' : 'ChevronDown'} size={14} className="text-muted-foreground flex-shrink-0" />
+        </div>
+
+        {expanded === 'wise' && (
+          <div className="mt-3 pt-3 border-t border-border/20 animate-fade-in-up">
+            <p className="text-sm font-raleway text-foreground/90 leading-relaxed">
+              ✦ {quote.text}
+            </p>
+            <p className="text-xs text-muted-foreground font-raleway mt-2">
+              Совет #{quote.number} из 30 — меняется каждый день
+            </p>
           </div>
         )}
       </div>
