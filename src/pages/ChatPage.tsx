@@ -132,9 +132,20 @@ export default function ChatPage({ onSubscribe }: ChatPageProps) {
   return (
     <div className="flex flex-col pt-14 md:pt-20" style={{ height: '100dvh' }}>
       <MysticWidgets />
-      <div className="flex-1 overflow-y-auto px-3 md:px-4 py-4 md:py-6 pb-[140px] md:pb-6">
+
+      {/* Обращение Морфея — выровнено с виджетами */}
+      <div className="max-w-3xl mx-auto w-full px-3 md:px-4 pb-2">
+        <div className="glass border border-primary/20 rounded-2xl px-5 py-4 text-sm leading-relaxed font-raleway flex gap-3 items-start">
+          <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-base bg-primary/20 border border-primary/40 animate-glow">🌙</div>
+          <div className="text-foreground/90 text-sm font-raleway leading-relaxed">
+            {messages[0]?.content.split('\n\n').map((p, i) => <p key={i} className={i > 0 ? 'mt-2' : ''}>{p}</p>)}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-3 md:px-4 py-2 md:py-4 pb-[140px] md:pb-6">
         <div className="max-w-3xl mx-auto space-y-6">
-          {messages.map((msg, idx) => (
+          {messages.slice(1).map((msg, idx) => (
             <div
               key={msg.id}
               className={`flex gap-4 animate-message ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
