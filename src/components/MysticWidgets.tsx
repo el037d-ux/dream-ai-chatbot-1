@@ -155,6 +155,36 @@ export default function MysticWidgets() {
   return (
     <div className="max-w-3xl mx-auto px-3 md:px-4 pt-3 pb-1 flex gap-3">
 
+      {/* Лунный календарь */}
+      <div className="flex-1 glass border border-border/30 rounded-2xl px-4 py-3 cursor-pointer hover:border-primary/30 transition-all"
+        onClick={() => setExpanded(expanded === 'moon' ? null : 'moon')}>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5">
+            <span className="text-2xl">{moon.emoji}</span>
+            <div>
+              <div className="text-xs text-muted-foreground font-raleway uppercase tracking-widest leading-none mb-0.5">Луна</div>
+              <div className="text-sm font-raleway text-foreground font-medium">{moon.name} · {moon.day} день</div>
+            </div>
+          </div>
+          <Icon name={expanded === 'moon' ? 'ChevronUp' : 'ChevronDown'} size={14} className="text-muted-foreground flex-shrink-0" />
+        </div>
+
+        {expanded === 'moon' && (
+          <div className="mt-3 pt-3 border-t border-border/20 space-y-2 animate-fade-in-up">
+            <div className="flex items-center gap-2">
+              <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
+                <div className="h-full rounded-full bg-primary/60 transition-all" style={{ width: `${moon.illumination}%` }} />
+              </div>
+              <span className="text-xs text-muted-foreground font-raleway">{moon.illumination}%</span>
+            </div>
+            <div className="text-xs text-muted-foreground font-raleway">
+              {LUNAR_MEANINGS[moon.day] || 'День луны'}
+            </div>
+            <div className="text-xs text-primary/80 font-raleway italic">✦ {moon.advice}</div>
+          </div>
+        )}
+      </div>
+
       {/* Гороскоп */}
       <div className="flex-1 glass border border-border/30 rounded-2xl px-4 py-3 cursor-pointer hover:border-primary/30 transition-all"
         onClick={() => { setExpanded(expanded === 'horoscope' ? null : 'horoscope'); setShowSignPicker(false); }}>
@@ -203,36 +233,6 @@ export default function MysticWidgets() {
                 ))}
               </div>
             )}
-          </div>
-        )}
-      </div>
-
-      {/* Лунный календарь */}
-      <div className="flex-1 glass border border-border/30 rounded-2xl px-4 py-3 cursor-pointer hover:border-primary/30 transition-all"
-        onClick={() => setExpanded(expanded === 'moon' ? null : 'moon')}>
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2.5">
-            <span className="text-2xl">{moon.emoji}</span>
-            <div>
-              <div className="text-xs text-muted-foreground font-raleway uppercase tracking-widest leading-none mb-0.5">Луна</div>
-              <div className="text-sm font-raleway text-foreground font-medium">{moon.name} · {moon.day} день</div>
-            </div>
-          </div>
-          <Icon name={expanded === 'moon' ? 'ChevronUp' : 'ChevronDown'} size={14} className="text-muted-foreground flex-shrink-0" />
-        </div>
-
-        {expanded === 'moon' && (
-          <div className="mt-3 pt-3 border-t border-border/20 space-y-2 animate-fade-in-up">
-            <div className="flex items-center gap-2">
-              <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
-                <div className="h-full rounded-full bg-primary/60 transition-all" style={{ width: `${moon.illumination}%` }} />
-              </div>
-              <span className="text-xs text-muted-foreground font-raleway">{moon.illumination}%</span>
-            </div>
-            <div className="text-xs text-muted-foreground font-raleway">
-              {LUNAR_MEANINGS[moon.day] || 'День луны'}
-            </div>
-            <div className="text-xs text-primary/80 font-raleway italic">✦ {moon.advice}</div>
           </div>
         )}
       </div>
