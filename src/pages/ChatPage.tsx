@@ -134,16 +134,25 @@ export default function ChatPage({ onSubscribe }: ChatPageProps) {
 
   return (
     <div className="flex flex-col pt-14 md:pt-20" style={{ height: '100dvh' }}>
-      <MysticWidgets />
 
-      {/* Обращение Морфея — выровнено с виджетами */}
-      <div className="max-w-3xl mx-auto w-full px-3 md:px-4 pb-2">
-        <div className="glass border border-primary/20 rounded-2xl px-5 py-4 text-sm leading-relaxed font-raleway flex gap-3 items-start">
-          <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-base bg-primary/20 border border-primary/40 animate-glow">🌙</div>
-          <div className="text-foreground/90 text-sm font-raleway leading-relaxed">
-            {messages[0]?.content.split('\n\n').map((p, i) => <p key={i} className={i > 0 ? 'mt-2' : ''}>{p}</p>)}
+      {/* Двухколоночный лейаут: слева — приветствие, справа — виджеты */}
+      <div className="w-full max-w-6xl mx-auto px-3 md:px-4 pt-3 pb-1 flex flex-col md:flex-row gap-3 items-start">
+
+        {/* Левая колонка — обращение Морфея */}
+        <div className="w-full md:w-[340px] md:flex-shrink-0">
+          <div className="glass border border-primary/20 rounded-2xl px-5 py-4 text-sm leading-relaxed font-raleway flex gap-3 items-start h-full">
+            <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-base bg-primary/20 border border-primary/40 animate-glow">🌙</div>
+            <div className="text-foreground/90 text-sm font-raleway leading-relaxed">
+              {messages[0]?.content.split('\n\n').map((p, i) => <p key={i} className={i > 0 ? 'mt-2' : ''}>{p}</p>)}
+            </div>
           </div>
         </div>
+
+        {/* Правая колонка — виджеты */}
+        <div className="w-full md:flex-1 min-w-0">
+          <MysticWidgets />
+        </div>
+
       </div>
 
 

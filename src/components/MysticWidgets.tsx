@@ -194,7 +194,7 @@ export default function MysticWidgets() {
   const quote = getDailyQuote(today);
 
   return (
-    <div className="max-w-3xl mx-auto px-3 md:px-4 pt-3 pb-1 flex flex-col gap-3">
+    <div className="flex flex-col gap-3">
 
       {/* Верхний ряд: Луна + Гороскоп */}
       <div className="flex gap-3">
