@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import Icon from '@/components/ui/icon';
 import { useAuth } from '@/context/AuthContext';
 import SubscribeBanner from '@/components/SubscribeBanner';
 import MysticWidgets from '@/components/MysticWidgets';
-import AuthPage from '@/pages/AuthPage';
+
 
 
 interface Message {
@@ -13,21 +12,15 @@ interface Message {
   timestamp: Date;
 }
 
-const API_URL = 'https://functions.poehali.dev/5f709de2-ccfd-4b79-9f7c-cb0a8c2e4f09';
 const FREE_LIMIT = 3;
 
-const GREETINGS = [
-  'Опишите свой сон как можно подробнее — каждая деталь важна...',
-  'Расскажите, что вы видели: образы, чувства, цвета — всё имеет значение...',
-  'Ваш сон ждёт толкования. Поделитесь им, и звёзды откроют его тайный смысл...',
-];
 
 interface ChatPageProps {
   onSubscribe: () => void;
 }
 
 export default function ChatPage({ onSubscribe }: ChatPageProps) {
-  const { user, updateUsage, canSendRequest, requestsLeft } = useAuth();
+  const { user, canSendRequest, requestsLeft } = useAuth();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '0',
@@ -36,20 +29,15 @@ export default function ChatPage({ onSubscribe }: ChatPageProps) {
       timestamp: new Date(),
     }
   ]);
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [showAuth, setShowAuth] = useState(false);
-  const [placeholder] = useState(GREETINGS[Math.floor(Math.random() * GREETINGS.length)]);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  const [guestUsed, setGuestUsed] = useState(() =>
+  const [guestUsed] = useState(() =>
     parseInt(localStorage.getItem('morpheus_guest_used') || '0', 10)
   );
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isLoading]);
+  }, [messages]);
 
   const getLeft = () => {
     if (user) return requestsLeft();
@@ -59,68 +47,6 @@ export default function ChatPage({ onSubscribe }: ChatPageProps) {
   const isBlocked = () => {
     if (user) return !canSendRequest();
     return false;
-  };
-
-  const handleSend = async () => {
-    if (!input.trim() || isLoading) return;
-    if (isBlocked()) { onSubscribe(); return; }
-
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: input.trim(),
-      timestamp: new Date(),
-    };
-    const updatedMessages = [...messages, userMessage];
-    setMessages(updatedMessages);
-    setInput('');
-    setIsLoading(true);
-    setError('');
-
-    try {
-      const apiMessages = updatedMessages
-        .filter(m => m.id !== '0')
-        .map(m => ({ role: m.role, content: m.content }));
-
-      const body: Record<string, unknown> = { action: 'analyze', messages: apiMessages };
-      if (user) body.user_id = user.user_id;
-
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-
-      const data = await res.json();
-
-      if (res.status === 403 && data.error === 'limit_reached') {
-        onSubscribe(); return;
-      }
-      if (!res.ok || !data.answer) throw new Error('Нет ответа');
-
-      if (user && data.free_used !== undefined) {
-        updateUsage(data.free_used, data.has_sub ?? user.has_subscription);
-      } else if (!user) {
-        const newUsed = guestUsed + 1;
-        setGuestUsed(newUsed);
-        localStorage.setItem('morpheus_guest_used', String(newUsed));
-      }
-
-      setMessages(prev => [...prev, {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: data.answer,
-        timestamp: new Date(),
-      }]);
-    } catch {
-      setError('Звёзды временно молчат... Попробуйте ещё раз.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
   };
 
   const formatContent = (text: string) =>
@@ -178,71 +104,14 @@ export default function ChatPage({ onSubscribe }: ChatPageProps) {
             </div>
           ))}
 
-          {isLoading && (
-            <div className="flex gap-4 animate-message">
-              <div className="w-10 h-10 rounded-full flex-shrink-0 bg-primary/20 border border-primary/40 animate-glow flex items-center justify-center text-lg">🌙</div>
-              <div className="glass border border-primary/20 rounded-2xl px-5 py-4">
-                <div className="flex items-center gap-3">
-                  <span className="text-muted-foreground text-sm font-raleway italic">Морфей читает знаки...</span>
-                  <div className="flex gap-1">
-                    {[0, 1, 2].map(i => (
-                      <div key={i} className="w-1.5 h-1.5 rounded-full bg-primary"
-                        style={{ animation: `twinkle 1.2s ease-in-out infinite`, animationDelay: `${i * 0.2}s` }} />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-          {error && <div className="text-center text-sm text-muted-foreground font-raleway italic">{error}</div>}
+
           <div ref={bottomRef} />
         </div>
       </div>
 
       <SubscribeBanner requestsLeft={left} onSubscribe={onSubscribe} isBlocked={blocked} />
 
-      <div className="glass-strong border-t border-border/30 px-3 md:px-4 py-3 md:py-4
-        fixed md:relative bottom-[64px] md:bottom-auto left-0 right-0 z-40 md:z-auto">
-        <div className="max-w-3xl mx-auto">
-          {!blocked && user && !user.has_subscription && (
-            <div className="flex justify-end mb-2">
-              <span className="text-xs text-muted-foreground font-raleway">
-                Бесплатных: <span className="text-primary font-medium">{left}</span> из {FREE_LIMIT}
-              </span>
-            </div>
-          )}
-          <div className="flex gap-3 items-end">
-            <div className="flex-1 relative">
-              <textarea
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder={blocked ? 'Оформите подписку, чтобы продолжить...' : placeholder}
-                disabled={blocked}
-                rows={2}
-                className="w-full bg-input/50 border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 resize-none focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all font-raleway disabled:opacity-50 disabled:cursor-not-allowed"
-              />
-              {!blocked && <div className="absolute bottom-2 right-3 text-xs text-muted-foreground/40">Enter</div>}
-            </div>
-            <button
-              onClick={blocked ? onSubscribe : handleSend}
-              disabled={!blocked && (!input.trim() || isLoading)}
-              className="w-12 h-12 rounded-xl bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/80 disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-105 active:scale-95 animate-glow"
-            >
-              <Icon name={blocked ? 'Lock' : 'Send'} size={18} />
-            </button>
-          </div>
-          <p className="text-center text-xs text-muted-foreground/40 mt-2 font-raleway">✦ Анализ основан на теориях Юнга и Фрейда ✦</p>
-        </div>
-      </div>
 
-      {showAuth && (
-        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm overflow-y-auto" onClick={() => setShowAuth(false)}>
-          <div onClick={e => e.stopPropagation()}>
-            <AuthPage onSuccess={() => setShowAuth(false)} />
-          </div>
-        </div>
-      )}
     </div>
   );
 }
