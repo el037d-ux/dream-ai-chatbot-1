@@ -6,7 +6,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import StarsBackground from '@/components/StarsBackground';
 import Navigation from '@/components/Navigation';
-import ChatWidget from '@/components/ChatWidget';
 import ChatPage from '@/pages/ChatPage';
 import HistoryPage from '@/pages/HistoryPage';
 import DictionaryPage from '@/pages/DictionaryPage';
@@ -83,9 +82,7 @@ function AppContent() {
         <div className="pb-0 md:pb-0" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0px)' }}>
           {renderPage()}
         </div>
-        <div className="hidden md:block">
-          <ChatWidget />
-        </div>
+
       </div>
     </div>
   );
