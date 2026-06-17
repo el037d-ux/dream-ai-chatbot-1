@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import Icon from '@/components/ui/icon';
 import { useAuth } from '@/context/AuthContext';
 import SubscribeBanner from '@/components/SubscribeBanner';
-import MysticWidgets from '@/components/MysticWidgets';
 
 interface Message {
   id: string;
@@ -132,26 +131,6 @@ export default function ChatPage({ onSubscribe }: ChatPageProps) {
 
   return (
     <div className="flex flex-col pt-14 md:pt-20" style={{ height: '100dvh' }}>
-
-      {/* Двухколоночный лейаут: слева — приветствие, справа — виджеты */}
-      <div className="w-full max-w-6xl mx-auto px-3 md:px-4 pt-3 pb-1 flex flex-col md:flex-row gap-3 items-start">
-
-        {/* Левая колонка — обращение Морфея */}
-        <div className="w-full md:w-[340px] md:flex-shrink-0">
-          <div className="glass border border-primary/20 rounded-2xl px-5 py-4 text-sm leading-relaxed font-raleway flex gap-3 items-start h-full">
-            <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-base bg-primary/20 border border-primary/40 animate-glow">🌙</div>
-            <div className="text-foreground/90 text-sm font-raleway leading-relaxed">
-              {messages[0]?.content.split('\n\n').map((p, i) => <p key={i} className={i > 0 ? 'mt-2' : ''}>{p}</p>)}
-            </div>
-          </div>
-        </div>
-
-        {/* Правая колонка — виджеты */}
-        <div className="w-full md:flex-1 min-w-0">
-          <MysticWidgets />
-        </div>
-
-      </div>
 
       {/* История сообщений */}
       <div className="flex-1 overflow-y-auto px-3 md:px-4 py-2 md:py-4 pb-[140px] md:pb-6">
