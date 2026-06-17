@@ -130,22 +130,22 @@ export default function ChatPage({ onSubscribe }: ChatPageProps) {
   const blocked = isBlocked();
 
   return (
-    <div className="flex flex-col pt-14 md:pt-20" style={{ height: '100dvh' }}>
+    <div className="flex flex-col md:pt-20" style={{ height: '100dvh', paddingTop: 'calc(3.5rem + env(safe-area-inset-top, 0px))' }}>
 
       {/* История сообщений */}
-      <div className="flex-1 overflow-y-auto px-3 md:px-4 py-2 md:py-4 pb-[140px] md:pb-6">
-        <div className="max-w-3xl mx-auto space-y-6">
+      <div className="flex-1 overflow-y-auto px-3 md:px-4 py-3 md:py-4" style={{ paddingBottom: 'calc(130px + env(safe-area-inset-bottom))' }}>
+        <div className="max-w-3xl mx-auto space-y-4 md:space-y-6">
           {messages.slice(1).map((msg, idx) => (
             <div
               key={msg.id}
-              className={`flex gap-4 animate-message ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
+              className={`flex gap-2 md:gap-4 animate-message ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
               style={{ animationDelay: `${idx * 0.05}s` }}
             >
-              <div className={`w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center text-lg
+              <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex-shrink-0 flex items-center justify-center text-base md:text-lg
                 ${msg.role === 'assistant' ? 'bg-primary/20 border border-primary/40 animate-glow' : 'bg-mystic-gold/20 border border-mystic-gold/40'}`}>
                 {msg.role === 'assistant' ? '🌙' : '✨'}
               </div>
-              <div className={`max-w-[75%] rounded-2xl px-5 py-4 text-sm leading-relaxed font-raleway
+              <div className={`max-w-[85%] md:max-w-[75%] rounded-2xl px-3 md:px-5 py-3 md:py-4 text-sm leading-relaxed font-raleway
                 ${msg.role === 'assistant' ? 'glass border border-primary/20 text-foreground' : 'bg-primary/20 border border-primary/30 text-foreground rounded-tr-sm'}`}>
                 <div className="text-foreground/90">{formatContent(msg.content)}</div>
                 <div className="text-xs text-muted-foreground mt-2 text-right">
@@ -178,40 +178,42 @@ export default function ChatPage({ onSubscribe }: ChatPageProps) {
 
       <SubscribeBanner requestsLeft={left} onSubscribe={onSubscribe} isBlocked={blocked} />
 
-      {/* Поле ввода — фиксированное на мобильном, обычное на десктопе */}
-      <div className="glass-strong border-t border-border/30 px-3 md:px-4 py-3 md:py-4
-        fixed md:relative bottom-[64px] md:bottom-auto left-0 right-0 z-40 md:z-auto">
+      {/* Поле ввода */}
+      <div
+        className="glass-strong border-t border-border/30 px-3 md:px-4 py-3
+          fixed md:relative bottom-[56px] md:bottom-auto left-0 right-0 z-40 md:z-auto"
+        style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px))' }}
+      >
         <div className="max-w-3xl mx-auto">
           {!blocked && user && !user.has_subscription && (
-            <div className="flex justify-end mb-2">
+            <div className="flex justify-end mb-1.5">
               <span className="text-xs text-muted-foreground font-raleway">
                 Бесплатных: <span className="text-primary font-medium">{left}</span> из {FREE_LIMIT}
               </span>
             </div>
           )}
-          <div className="flex gap-3 items-end">
-            <div className="flex-1 relative">
-              <textarea
-                ref={inputRef}
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder={blocked ? 'Оформите подписку, чтобы продолжить...' : placeholder}
-                disabled={blocked}
-                rows={2}
-                className="w-full bg-input/50 border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 resize-none focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all font-raleway disabled:opacity-50 disabled:cursor-not-allowed"
-              />
-              {!blocked && <div className="absolute bottom-2 right-3 text-xs text-muted-foreground/40">Enter</div>}
-            </div>
+          <div className="flex gap-2 items-end">
+            <textarea
+              ref={inputRef}
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={blocked ? 'Оформите подписку...' : placeholder}
+              disabled={blocked}
+              rows={2}
+              className="flex-1 bg-input/50 border border-border rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 resize-none focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all font-raleway disabled:opacity-50 disabled:cursor-not-allowed"
+            />
             <button
               onClick={blocked ? onSubscribe : handleSend}
               disabled={!blocked && (!input.trim() || isLoading)}
-              className="w-12 h-12 rounded-xl bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/80 disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-105 active:scale-95 animate-glow"
+              className="flex-shrink-0 w-11 h-11 rounded-xl bg-primary hover:bg-primary/80 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 flex items-center justify-center animate-glow"
             >
-              <Icon name={blocked ? 'Lock' : 'Send'} size={18} />
+              {isLoading
+                ? <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                : <Icon name={blocked ? 'Lock' : 'Send'} size={17} className="text-primary-foreground" />
+              }
             </button>
           </div>
-          <p className="text-center text-xs text-muted-foreground/40 mt-2 font-raleway">✦ Анализ основан на теориях Юнга и Фрейда ✦</p>
         </div>
       </div>
 

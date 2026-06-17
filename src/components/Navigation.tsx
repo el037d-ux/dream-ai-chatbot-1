@@ -110,7 +110,9 @@ export default function Navigation({ active, onNavigate }: NavProps) {
       </nav>
 
       {/* Mobile top bar (logo only) */}
-      <div className="glass-strong fixed top-0 left-0 right-0 z-50 px-4 py-3 flex md:hidden items-center justify-between">
+      <div className="glass-strong fixed top-0 left-0 right-0 z-50 px-4 flex md:hidden items-center justify-between"
+        style={{ paddingTop: 'calc(0.75rem + env(safe-area-inset-top, 0px))', paddingBottom: '0.75rem' }}
+      >
         <button onClick={() => onNavigate('chat')} className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center animate-glow">
             <span className="text-base">🌙</span>
@@ -149,22 +151,22 @@ export default function Navigation({ active, onNavigate }: NavProps) {
       </div>
 
       {/* Mobile bottom nav */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
-        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
-      >
-        <div className="glass-strong border-t border-border/30 px-2 py-2 flex items-center justify-around">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
+        <div className="glass-strong border-t border-border/30 px-2 pt-2 flex items-center justify-around"
+          style={{ paddingBottom: 'calc(0.5rem + env(safe-area-inset-bottom, 0px))' }}
+        >
           {mobileItems.map((item) => (
             <button
               key={item.id}
               onClick={() => onNavigate(item.id)}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all duration-200 min-w-0
+              className={`flex flex-col items-center gap-0.5 px-4 py-1 rounded-xl transition-all duration-200 min-w-0 min-h-[44px] justify-center
                 ${active === item.id ? 'text-primary' : 'text-muted-foreground'}`}
             >
-              <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all
                 ${active === item.id ? 'bg-primary/15' : ''}`}>
-                <Icon name={item.icon} fallback="Circle" size={19} />
+                <Icon name={item.icon} fallback="Circle" size={20} />
               </div>
-              <span className="text-xs font-raleway leading-none" style={{ fontSize: 10 }}>{item.label}</span>
+              <span className="text-[10px] font-raleway leading-none">{item.label}</span>
             </button>
           ))}
         </div>

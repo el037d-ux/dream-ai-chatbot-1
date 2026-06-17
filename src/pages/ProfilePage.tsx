@@ -35,7 +35,7 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
   // Не авторизован — форма входа/регистрации
   if (!user) {
     return (
-      <div className="min-h-screen pt-24 pb-12 px-4">
+      <div className="min-h-screen px-4 pb-24" style={{ paddingTop: 'calc(4rem + env(safe-area-inset-top, 0px))' }}>
         <div className="max-w-md mx-auto">
           <div className="text-center mb-8 animate-fade-in-up">
             <div className="text-5xl mb-3 animate-float">🌙</div>
@@ -111,22 +111,22 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
 
   // Авторизован — полный кабинет
   return (
-    <div className="min-h-screen pt-24 pb-12 px-4">
+    <div className="min-h-screen px-4 pb-24" style={{ paddingTop: 'calc(4rem + env(safe-area-inset-top, 0px))' }}>
       <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-10 animate-fade-in-up">
-          <h1 className="font-cormorant text-4xl md:text-5xl font-light text-foreground mb-3">Личный кабинет</h1>
+        <div className="text-center mb-6 animate-fade-in-up">
+          <h1 className="font-cormorant text-3xl md:text-5xl font-light text-foreground mb-3">Личный кабинет</h1>
           <div className="mystic-divider my-4" />
         </div>
 
         {/* Profile card */}
         <div className="glass border border-border/30 rounded-2xl p-6 mb-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-          <div className="flex items-center gap-5">
-            <div className="relative">
-              <div className="w-20 h-20 rounded-full bg-primary/20 border-2 border-primary/40 animate-glow flex items-center justify-center text-4xl">🌙</div>
-              <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-mystic-gold border-2 border-background flex items-center justify-center text-xs">✦</div>
+          <div className="flex items-center gap-4">
+            <div className="relative flex-shrink-0">
+              <div className="w-14 h-14 md:w-20 md:h-20 rounded-full bg-primary/20 border-2 border-primary/40 animate-glow flex items-center justify-center text-2xl md:text-4xl">🌙</div>
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 md:w-6 md:h-6 rounded-full bg-mystic-gold border-2 border-background flex items-center justify-center text-xs">✦</div>
             </div>
-            <div>
-              <h2 className="font-cormorant text-2xl text-foreground">{user.email}</h2>
+            <div className="min-w-0">
+              <h2 className="font-cormorant text-xl md:text-2xl text-foreground truncate">{user.email}</h2>
               <p className="text-sm text-muted-foreground font-raleway">
                 {user.has_subscription
                   ? <span className="text-primary">✦ Подписка активна</span>
@@ -213,13 +213,13 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
         <div className="space-y-4">
           <div className="glass border border-border/30 rounded-2xl p-5 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             <h3 className="font-cormorant text-xl text-foreground mb-4">Теория анализа</h3>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2">
               {[{ id: 'both', label: 'Юнг + Фрейд', emoji: '⚗️' }, { id: 'jung', label: 'Только Юнг', emoji: '🌀' }, { id: 'freud', label: 'Только Фрейд', emoji: '🛋️' }].map(opt => (
                 <button key={opt.id} onClick={() => setTheory(opt.id as typeof theory)}
-                  className={`p-3 rounded-xl border text-center transition-all font-raleway text-sm
+                  className={`p-2.5 rounded-xl border text-center transition-all font-raleway active:scale-95
                     ${theory === opt.id ? 'border-primary bg-primary/10 text-primary' : 'border-border/30 text-muted-foreground hover:border-primary/30'}`}>
-                  <div className="text-2xl mb-1">{opt.emoji}</div>
-                  <div className="text-xs">{opt.label}</div>
+                  <div className="text-xl mb-1">{opt.emoji}</div>
+                  <div className="text-[11px] leading-tight">{opt.label}</div>
                 </button>
               ))}
             </div>
@@ -230,7 +230,7 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
             <div className="space-y-2">
               {[{ id: 'basic', label: 'Базовый', desc: 'Краткое толкование символов', emoji: '🌱' }, { id: 'deep', label: 'Глубокий', desc: 'Психологический анализ + предсказание', emoji: '🌊' }, { id: 'esoteric', label: 'Эзотерический', desc: 'Полный мистический разбор с ритуалами', emoji: '🔮' }].map(opt => (
                 <button key={opt.id} onClick={() => setDepth(opt.id as typeof depth)}
-                  className={`w-full p-3 rounded-xl border text-left flex items-center gap-3 transition-all
+                  className={`w-full p-3 rounded-xl border text-left flex items-center gap-3 transition-all active:scale-[0.98]
                     ${depth === opt.id ? 'border-primary bg-primary/10' : 'border-border/30 hover:border-primary/30'}`}>
                   <span className="text-xl">{opt.emoji}</span>
                   <div>

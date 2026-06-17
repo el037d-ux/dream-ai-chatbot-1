@@ -97,7 +97,7 @@ export default function DictionaryPage() {
   );
 
   return (
-    <div className="min-h-screen pt-20 md:pt-24 pb-24 md:pb-12 px-4">
+    <div className="min-h-screen px-4 pb-24" style={{ paddingTop: 'calc(4rem + env(safe-area-inset-top, 0px))' }}>
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-10 animate-fade-in-up">
