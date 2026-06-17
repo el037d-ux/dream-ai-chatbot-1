@@ -287,6 +287,30 @@ def handle_check_payment(body: dict) -> dict:
     return {'statusCode': 200, 'body': json.dumps({'status': final_status}, ensure_ascii=False)}
 
 
+def handle_debug_payments(body: dict) -> dict:
+    """Debug: проверяет статусы последних 5 платежей напрямую в ЮКассе."""
+    user_id = body.get('user_id')
+    if not user_id:
+        return {'statusCode': 400, 'body': json.dumps({'error': 'Требуется user_id'})}
+    conn = get_conn(); cur = conn.cursor()
+    cur.execute("SELECT yookassa_payment_id, status, created_at FROM payments WHERE user_id=%s ORDER BY created_at DESC LIMIT 5", (user_id,))
+    rows = cur.fetchall()
+    cur.close(); conn.close()
+    creds = base64.b64encode(f'{SHOP_ID}:{YK_SECRET}'.encode()).decode()
+    results = []
+    for (pid, db_status, created_at) in rows:
+        try:
+            req = urllib.request.Request(
+                f'https://api.yookassa.ru/v3/payments/{pid}',
+                headers={'Authorization': f'Basic {creds}', 'Content-Type': 'application/json'})
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                data = json.loads(resp.read().decode())
+            results.append({'payment_id': pid, 'db_status': db_status, 'yk_status': data.get('status'), 'paid': data.get('paid'), 'created_at': str(created_at)})
+        except urllib.error.HTTPError as e:
+            results.append({'payment_id': pid, 'db_status': db_status, 'yk_error': e.code, 'created_at': str(created_at)})
+    return {'statusCode': 200, 'body': json.dumps({'payments': results}, ensure_ascii=False)}
+
+
 def handle_check_subscription(body: dict) -> dict:
     """Проверяет актуальный статус подписки пользователя."""
     user_id = body.get('user_id')
@@ -331,6 +355,8 @@ def handler(event: dict, context) -> dict:
         result = handle_check_payment(body)
     elif action == 'check_subscription':
         result = handle_check_subscription(body)
+    elif action == 'debug_payments':
+        result = handle_debug_payments(body)
     else:
         result = {'statusCode': 400, 'body': json.dumps({'error': f'Неизвестный action: {action}'})}
 

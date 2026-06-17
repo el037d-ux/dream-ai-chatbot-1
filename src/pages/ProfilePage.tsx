@@ -166,14 +166,28 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
               onClick={async () => {
                 setRefreshing(true); setRefreshMsg('');
                 try {
-                  const res = await fetch(API_URL, {
+                  // Сначала проверяем платежи в ЮКассе и активируем если succeeded
+                  const payRes = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'check_payment', user_id: user.user_id }),
+                  });
+                  const payData = await payRes.json();
+                  if (payData.status === 'succeeded') {
+                    updateUsage(user.free_requests_used, true);
+                    setRefreshMsg('✦ Подписка активирована!');
+                    setRefreshing(false);
+                    return;
+                  }
+                  // Затем читаем актуальный статус из базы
+                  const subRes = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action: 'check_subscription', user_id: user.user_id }),
                   });
-                  const data = await res.json();
-                  updateUsage(data.free_requests_used, data.has_subscription);
-                  setRefreshMsg(data.has_subscription ? '✦ Подписка активна!' : 'Активной подписки не найдено');
+                  const subData = await subRes.json();
+                  updateUsage(subData.free_requests_used, subData.has_subscription);
+                  setRefreshMsg(subData.has_subscription ? '✦ Подписка активна!' : 'Активной подписки не найдено');
                 } catch {
                   setRefreshMsg('Ошибка проверки');
                 } finally {
