@@ -135,6 +135,22 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
             </div>
           </div>
 
+          {/* Счётчики */}
+          <div className="mt-5 grid grid-cols-2 gap-3">
+            <div className="glass border border-border/30 rounded-xl px-4 py-3 text-center">
+              <div className="font-cormorant text-3xl text-foreground font-semibold">{user.free_requests_used}</div>
+              <div className="text-xs text-muted-foreground font-raleway mt-0.5">снов истолковано</div>
+            </div>
+            <div className={`glass border rounded-xl px-4 py-3 text-center ${user.has_subscription ? 'border-primary/30 bg-primary/5' : 'border-border/30'}`}>
+              <div className={`font-cormorant text-3xl font-semibold ${user.has_subscription ? 'text-primary' : 'text-foreground'}`}>
+                {user.has_subscription ? '∞' : Math.max(0, 3 - user.free_requests_used)}
+              </div>
+              <div className="text-xs text-muted-foreground font-raleway mt-0.5">
+                {user.has_subscription ? 'безлимит по подписке' : 'бесплатных осталось'}
+              </div>
+            </div>
+          </div>
+
           <div className="mt-4 space-y-2">
             {!user.has_subscription && (
               <button
