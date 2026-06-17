@@ -244,42 +244,47 @@ def handle_webhook(body: dict) -> dict:
 
 
 def handle_check_payment(body: dict) -> dict:
-    """Проверяет статус платежа в ЮКассе и активирует подписку если succeeded."""
+    """Проверяет все pending-платежи пользователя в ЮКассе и активирует подписку если хоть один succeeded."""
     user_id = body.get('user_id')
     if not user_id:
         return {'statusCode': 400, 'body': json.dumps({'error': 'Требуется user_id'})}
 
     conn = get_conn(); cur = conn.cursor()
-    cur.execute("SELECT yookassa_payment_id FROM payments WHERE user_id=%s AND status='pending' ORDER BY created_at DESC LIMIT 1", (user_id,))
-    row = cur.fetchone()
-    if not row:
+    cur.execute("SELECT yookassa_payment_id FROM payments WHERE user_id=%s AND status='pending' ORDER BY created_at DESC", (user_id,))
+    rows = cur.fetchall()
+    if not rows:
         cur.close(); conn.close()
         return {'statusCode': 200, 'body': json.dumps({'status': 'not_found'})}
 
-    payment_id = row[0]
     creds = base64.b64encode(f'{SHOP_ID}:{YK_SECRET}'.encode()).decode()
-    req = urllib.request.Request(
-        f'https://api.yookassa.ru/v3/payments/{payment_id}',
-        headers={'Authorization': f'Basic {creds}', 'Content-Type': 'application/json'})
-    try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            result = json.loads(resp.read().decode())
-    except urllib.error.HTTPError as e:
-        cur.close(); conn.close()
-        return {'statusCode': 502, 'body': json.dumps({'error': f'ЮКасса: {e.code}'})}
+    final_status = 'pending'
 
-    yk_status = result.get('status')
-    if yk_status == 'succeeded':
-        cur.execute('UPDATE payments SET status=%s, paid_at=NOW() WHERE yookassa_payment_id=%s', ('succeeded', payment_id))
-        cur.execute("SELECT id FROM subscriptions WHERE user_id=%s AND status='active' AND expires_at>NOW() LIMIT 1", (user_id,))
-        if not cur.fetchone():
-            expires_at = datetime.now() + timedelta(days=30)
-            cur.execute('INSERT INTO subscriptions (user_id, status, expires_at, payment_id, payment_status) VALUES (%s,%s,%s,%s,%s)',
-                        (int(user_id), 'active', expires_at, payment_id, 'succeeded'))
-            print(f'check_payment: subscription activated user_id={user_id}')
+    for (payment_id,) in rows:
+        req = urllib.request.Request(
+            f'https://api.yookassa.ru/v3/payments/{payment_id}',
+            headers={'Authorization': f'Basic {creds}', 'Content-Type': 'application/json'})
+        try:
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                result = json.loads(resp.read().decode())
+        except urllib.error.HTTPError:
+            continue
+
+        yk_status = result.get('status')
+        if yk_status and yk_status != 'pending':
+            cur.execute('UPDATE payments SET status=%s, paid_at=NOW() WHERE yookassa_payment_id=%s', (yk_status, payment_id))
+
+        if yk_status == 'succeeded':
+            cur.execute("SELECT id FROM subscriptions WHERE user_id=%s AND status='active' AND expires_at>NOW() LIMIT 1", (user_id,))
+            if not cur.fetchone():
+                expires_at = datetime.now() + timedelta(days=30)
+                cur.execute('INSERT INTO subscriptions (user_id, status, expires_at, payment_id, payment_status) VALUES (%s,%s,%s,%s,%s)',
+                            (int(user_id), 'active', expires_at, payment_id, 'succeeded'))
+                print(f'check_payment: subscription activated user_id={user_id} payment_id={payment_id}')
+            final_status = 'succeeded'
+            break
 
     cur.close(); conn.close()
-    return {'statusCode': 200, 'body': json.dumps({'status': yk_status}, ensure_ascii=False)}
+    return {'statusCode': 200, 'body': json.dumps({'status': final_status}, ensure_ascii=False)}
 
 
 def handle_check_subscription(body: dict) -> dict:
