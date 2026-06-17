@@ -6,6 +6,25 @@ interface NavProps {
   onNavigate: (page: string) => void;
 }
 
+function getMoonPhase(date: Date) {
+  const known = new Date(2000, 0, 6);
+  const diff = (date.getTime() - known.getTime()) / (1000 * 60 * 60 * 24);
+  const cycle = 29.53058867;
+  const day = ((diff % cycle) + cycle) % cycle;
+  const illumination = Math.round(50 * (1 - Math.cos((2 * Math.PI * day) / cycle)));
+  let name: string, emoji: string;
+  if (day < 1.5)       { name = 'Новолуние';          emoji = '🌑'; }
+  else if (day < 7.4)  { name = 'Растущий серп';       emoji = '🌒'; }
+  else if (day < 9.9)  { name = 'Первая четверть';     emoji = '🌓'; }
+  else if (day < 14.8) { name = 'Растущая луна';       emoji = '🌔'; }
+  else if (day < 16.3) { name = 'Полнолуние';          emoji = '🌕'; }
+  else if (day < 21.2) { name = 'Убывающая луна';      emoji = '🌖'; }
+  else if (day < 23.7) { name = 'Последняя четверть';  emoji = '🌗'; }
+  else if (day < 28.0) { name = 'Убывающий серп';      emoji = '🌘'; }
+  else                 { name = 'Тёмная луна';          emoji = '🌑'; }
+  return { name, emoji, day: Math.round(day) + 1, illumination };
+}
+
 const navItems = [
   { id: 'chat', label: 'Предсказание', icon: 'Moon' },
   { id: 'profile', label: 'Кабинет', icon: 'User' },
@@ -36,6 +55,7 @@ export default function Navigation({ active, onNavigate }: NavProps) {
   };
 
   const showInstall = !!installPrompt && !installed;
+  const moon = getMoonPhase(new Date());
 
   return (
     <>
@@ -51,6 +71,15 @@ export default function Navigation({ active, onNavigate }: NavProps) {
               <div className="text-xs text-muted-foreground font-raleway tracking-widest uppercase">Толкователь снов</div>
             </div>
           </button>
+
+          {/* Лунный календарь */}
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-border/30 bg-white/5">
+            <span className="text-lg leading-none">{moon.emoji}</span>
+            <div>
+              <div className="text-xs font-raleway text-foreground/80 font-medium leading-none">{moon.name}</div>
+              <div className="text-xs text-muted-foreground font-raleway leading-none mt-0.5">{moon.day} день · {moon.illumination}%</div>
+            </div>
+          </div>
 
           <div className="flex items-center gap-1">
             {showInstall && (
@@ -91,6 +120,15 @@ export default function Navigation({ active, onNavigate }: NavProps) {
             <div className="text-xs text-muted-foreground font-raleway tracking-wider uppercase" style={{ fontSize: 9 }}>Толкователь снов</div>
           </div>
         </button>
+        {/* Лунный календарь — мобиль */}
+        <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-border/30 bg-white/5">
+          <span className="text-base leading-none">{moon.emoji}</span>
+          <div>
+            <div className="text-xs font-raleway text-foreground/80 font-medium leading-none" style={{ fontSize: 10 }}>{moon.name}</div>
+            <div className="text-muted-foreground font-raleway leading-none mt-0.5" style={{ fontSize: 9 }}>{moon.day} д · {moon.illumination}%</div>
+          </div>
+        </div>
+
         <div className="flex items-center gap-1">
           {showInstall && (
             <button
