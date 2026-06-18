@@ -67,7 +67,7 @@ export default function Navigation({ active, onNavigate }: NavProps) {
               <span className="text-lg">🌙</span>
             </div>
             <div>
-              <div className="font-cormorant text-xl font-semibold text-foreground leading-none">Морфей</div>
+              <div className="font-cormorant text-xl font-semibold text-foreground leading-none">СонникАИ</div>
               <div className="text-xs text-muted-foreground font-raleway tracking-widest uppercase">Толкователь снов</div>
             </div>
           </button>
@@ -118,7 +118,7 @@ export default function Navigation({ active, onNavigate }: NavProps) {
             <span className="text-base">🌙</span>
           </div>
           <div>
-            <div className="font-cormorant text-lg font-semibold text-foreground leading-none">Морфей</div>
+            <div className="font-cormorant text-lg font-semibold text-foreground leading-none">СонникАИ</div>
             <div className="text-xs text-muted-foreground font-raleway tracking-wider uppercase" style={{ fontSize: 9 }}>Толкователь снов</div>
           </div>
         </button>

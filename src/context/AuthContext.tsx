@@ -29,7 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const saved = localStorage.getItem('morpheus_user');
+    const saved = localStorage.getItem('sonnik_user');
     if (saved) {
       try { setUser(JSON.parse(saved)); } catch (e) { void e; }
     }
@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const saveUser = (u: User) => {
     setUser(u);
-    localStorage.setItem('morpheus_user', JSON.stringify(u));
+    localStorage.setItem('sonnik_user', JSON.stringify(u));
   };
 
   const login = async (email: string, password: string) => {
@@ -67,7 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('morpheus_user');
+    localStorage.removeItem('sonnik_user');
   };
 
   const updateUsage = (free_used: number, has_sub: boolean) => {

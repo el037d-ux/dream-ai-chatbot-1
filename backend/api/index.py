@@ -24,7 +24,7 @@ CORS = {
     'Access-Control-Allow-Headers': 'Content-Type',
 }
 
-SYSTEM_PROMPT = """Ты — Морфей, мистический толкователь снов. Ты глубокий психолог, эзотерик и знаток сонников.
+SYSTEM_PROMPT = """Ты — СонникАИ, мистический толкователь снов. Ты глубокий психолог, эзотерик и знаток сонников.
 
 Анализируй сон пользователя по пяти источникам толкования:
 
@@ -152,7 +152,7 @@ def handle_analyze(body: dict) -> dict:
     payload = json.dumps({'model': 'gpt-4o-mini', 'messages': chat_msgs, 'max_tokens': 1200, 'temperature': 0.85}).encode()
     req = urllib.request.Request('https://api.aitunnel.ru/v1/chat/completions', data=payload,
         headers={'Authorization': f'Bearer {AI_KEY}', 'Content-Type': 'application/json',
-                 'User-Agent': 'Mozilla/5.0 (compatible; MorpheusBot/1.0)'}, method='POST')
+                 'User-Agent': 'Mozilla/5.0 (compatible; SonnikAIBot/1.0)'}, method='POST')
     try:
         with urllib.request.urlopen(req, timeout=20) as resp:
             result = json.loads(resp.read().decode())
@@ -180,13 +180,13 @@ def handle_create_payment(body: dict) -> dict:
         'amount': {'value': PRICE, 'currency': 'RUB'},
         'confirmation': {'type': 'redirect', 'return_url': 'https://27ac383e-de3c-4d04-bda2-5818fbd8c423.poehali.dev/?payment_success=1'},
         'capture': True,
-        'description': f'Подписка Морфей 30 дней — {email}',
+        'description': f'Подписка СонникАИ 30 дней — {email}',
         'metadata': {'user_id': str(user_id)},
     }
     if email:
         pdata['receipt'] = {
             'customer': {'email': email},
-            'items': [{'description': 'Подписка Морфей 30 дней', 'quantity': '1.00',
+            'items': [{'description': 'Подписка СонникАИ 30 дней', 'quantity': '1.00',
                        'amount': {'value': PRICE, 'currency': 'RUB'},
                        'vat_code': 1, 'payment_mode': 'full_payment', 'payment_subject': 'service'}]
         }

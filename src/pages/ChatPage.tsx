@@ -29,7 +29,7 @@ export default function ChatPage({ onSubscribe }: ChatPageProps) {
     {
       id: '0',
       role: 'assistant',
-      content: '🌙 Я — Морфей, хранитель врат между мирами. Ваши сны — послания из глубин бессознательного.\n\nОпишите свой сон, и я раскрою его истинный смысл через призму психологии Юнга и Фрейда.',
+      content: '🌙 Я — СонникАИ, хранитель врат между мирами. Ваши сны — послания из глубин бессознательного.\n\nОпишите свой сон, и я раскрою его истинный смысл через призму психологии Юнга и Фрейда.',
       timestamp: new Date(),
     }
   ]);
@@ -41,7 +41,7 @@ export default function ChatPage({ onSubscribe }: ChatPageProps) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const [guestUsed, setGuestUsed] = useState(() =>
-    parseInt(localStorage.getItem('morpheus_guest_used') || '0', 10)
+    parseInt(localStorage.getItem('sonnik_guest_used') || '0', 10)
   );
 
   useEffect(() => {
@@ -100,7 +100,7 @@ export default function ChatPage({ onSubscribe }: ChatPageProps) {
       } else if (!user) {
         const newUsed = guestUsed + 1;
         setGuestUsed(newUsed);
-        localStorage.setItem('morpheus_guest_used', String(newUsed));
+        localStorage.setItem('sonnik_guest_used', String(newUsed));
       }
 
       setMessages(prev => [...prev, {
@@ -160,7 +160,7 @@ export default function ChatPage({ onSubscribe }: ChatPageProps) {
               <div className="w-10 h-10 rounded-full flex-shrink-0 bg-primary/20 border border-primary/40 animate-glow flex items-center justify-center text-lg">🌙</div>
               <div className="glass border border-primary/20 rounded-2xl px-5 py-4">
                 <div className="flex items-center gap-3">
-                  <span className="text-muted-foreground text-sm font-raleway italic">Морфей читает знаки...</span>
+                  <span className="text-muted-foreground text-sm font-raleway italic">СонникАИ читает знаки...</span>
                   <div className="flex gap-1">
                     {[0, 1, 2].map(i => (
                       <div key={i} className="w-1.5 h-1.5 rounded-full bg-primary"

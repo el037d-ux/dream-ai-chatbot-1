@@ -34,11 +34,11 @@ export default function AboutPage() {
         <div className="text-center mb-14 animate-fade-in-up">
           <div className="text-6xl mb-4 animate-float">🌙</div>
           <h1 className="font-cormorant text-4xl md:text-6xl font-light text-foreground mb-4">
-            О Морфее
+            О СонникАИ
           </h1>
           <div className="mystic-divider my-6" />
           <p className="text-foreground/80 font-raleway text-lg leading-relaxed max-w-2xl mx-auto">
-            Морфей — это мост между наукой и мистикой, созданный для тех, кто хочет понять скрытый язык своего подсознания.
+            СонникАИ — это мост между наукой и мистикой, созданный для тех, кто хочет понять скрытый язык своего подсознания.
           </p>
         </div>
 
@@ -46,7 +46,7 @@ export default function AboutPage() {
         <div className="glass border border-primary/20 rounded-2xl p-8 mb-10 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
           <h2 className="font-cormorant text-3xl text-foreground mb-4">Наша миссия</h2>
           <p className="text-foreground/80 font-raleway leading-relaxed mb-4">
-            Каждую ночь вы путешествуете в мир, где архетипы говорят на языке образов, где желания находят форму, а страхи обретают лицо. Мы создали Морфея, чтобы помочь вам расшифровать это послание.
+            Каждую ночь вы путешествуете в мир, где архетипы говорят на языке образов, где желания находят форму, а страхи обретают лицо. Мы создали СонникАИ, чтобы помочь вам расшифровать это послание.
           </p>
           <p className="text-foreground/70 font-raleway leading-relaxed">
             Используя глубинный психологический анализ Карла Юнга и Зигмунда Фрейда, наш ИИ преобразует ваши сны в ценные психологические инсайты, которые помогают лучше понять себя.

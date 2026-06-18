@@ -1,4 +1,4 @@
-const CACHE_NAME = 'morpheus-v1';
+const CACHE_NAME = 'sonnik-ai-v1';
 const STATIC_ASSETS = ['/', '/index.html'];
 
 self.addEventListener('install', (e) => {

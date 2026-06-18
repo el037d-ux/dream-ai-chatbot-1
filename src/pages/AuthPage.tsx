@@ -34,7 +34,7 @@ export default function AuthPage({ onSuccess }: AuthPageProps) {
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="text-6xl mb-3 animate-float">🌙</div>
-          <h1 className="font-cormorant text-4xl font-light text-foreground">Морфей</h1>
+          <h1 className="font-cormorant text-4xl font-light text-foreground">СонникАИ</h1>
           <p className="text-muted-foreground font-raleway text-sm mt-1">Толкователь снов</p>
         </div>
 

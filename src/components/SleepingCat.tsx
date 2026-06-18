@@ -134,7 +134,7 @@ export default function SleepingCat() {
         </div>
       </div>
 
-      <p className="text-xs text-muted-foreground/40 font-raleway mt-3 italic">Морфей дремлет в ожидании твоего сна...</p>
+      <p className="text-xs text-muted-foreground/40 font-raleway mt-3 italic">СонникАИ дремлет в ожидании твоего сна...</p>
 
       <style>{`
         @keyframes catBreath {
