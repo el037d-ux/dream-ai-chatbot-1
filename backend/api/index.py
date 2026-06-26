@@ -16,7 +16,11 @@ SHOP_ID    = '1365310'
 YK_SECRET  = 'live_ljq-vesr-vSCdEt08daoW88CbTRd-ZkwOzRgiKfHml0'
 AI_KEY     = os.environ.get('AITUNNEL_API_KEY', '')
 FREE_LIMIT = 3
-PRICE      = '119.00'
+
+PLANS = {
+    'month': {'price': '99.00',  'days': 30,  'label': 'Подписка СонникАИ на месяц'},
+    'year':  {'price': '999.00', 'days': 365, 'label': 'Подписка СонникАИ на год'},
+}
 
 CORS = {
     'Access-Control-Allow-Origin': '*',
@@ -169,25 +173,31 @@ def handle_analyze(body: dict) -> dict:
 
 
 def handle_create_payment(body: dict) -> dict:
-    """Создаёт платёж ЮКасса 119 руб."""
+    """Создаёт платёж ЮКасса по выбранному тарифу (month/year)."""
     user_id = body.get('user_id')
     email   = body.get('email', '')
+    plan_id = body.get('plan', 'month')
     if not user_id:
         return {'statusCode': 400, 'body': json.dumps({'error': 'Требуется user_id'})}
 
+    plan = PLANS.get(plan_id)
+    if not plan:
+        return {'statusCode': 400, 'body': json.dumps({'error': 'Неизвестный тариф'})}
+    price = plan['price']
+
     idem_key = str(uuid.uuid4())
     pdata = {
-        'amount': {'value': PRICE, 'currency': 'RUB'},
+        'amount': {'value': price, 'currency': 'RUB'},
         'confirmation': {'type': 'redirect', 'return_url': 'https://27ac383e-de3c-4d04-bda2-5818fbd8c423.poehali.dev/?payment_success=1'},
         'capture': True,
-        'description': f'Подписка СонникАИ 30 дней — {email}',
-        'metadata': {'user_id': str(user_id)},
+        'description': f"{plan['label']} — {email}",
+        'metadata': {'user_id': str(user_id), 'plan': plan_id},
     }
     if email:
         pdata['receipt'] = {
             'customer': {'email': email},
-            'items': [{'description': 'Подписка СонникАИ 30 дней', 'quantity': '1.00',
-                       'amount': {'value': PRICE, 'currency': 'RUB'},
+            'items': [{'description': plan['label'], 'quantity': '1.00',
+                       'amount': {'value': price, 'currency': 'RUB'},
                        'vat_code': 1, 'payment_mode': 'full_payment', 'payment_subject': 'service'}]
         }
 
@@ -207,7 +217,7 @@ def handle_create_payment(body: dict) -> dict:
     payment_id = result['id']
     conn = get_conn(); cur = conn.cursor()
     cur.execute('INSERT INTO payments (user_id, yookassa_payment_id, amount, status) VALUES (%s,%s,%s,%s)',
-                (user_id, payment_id, 119, 'pending'))
+                (user_id, payment_id, int(float(price)), 'pending'))
     cur.close(); conn.close()
 
     return {'statusCode': 200, 'body': json.dumps({
@@ -223,7 +233,9 @@ def handle_webhook(body: dict) -> dict:
 
     obj        = body.get('object', {})
     payment_id = obj.get('id')
-    user_id    = obj.get('metadata', {}).get('user_id')
+    meta       = obj.get('metadata', {})
+    user_id    = meta.get('user_id')
+    plan_days  = PLANS.get(meta.get('plan', 'month'), PLANS['month'])['days']
     if not payment_id or not user_id:
         return {'statusCode': 200, 'body': json.dumps({'ok': True})}
 
@@ -235,7 +247,7 @@ def handle_webhook(body: dict) -> dict:
         return {'statusCode': 200, 'body': json.dumps({'ok': True})}
 
     cur.execute('UPDATE payments SET status=%s, paid_at=NOW() WHERE yookassa_payment_id=%s', ('succeeded', payment_id))
-    expires_at = datetime.now() + timedelta(days=30)
+    expires_at = datetime.now() + timedelta(days=plan_days)
     cur.execute('INSERT INTO subscriptions (user_id, status, expires_at, payment_id, payment_status) VALUES (%s,%s,%s,%s,%s)',
                 (int(user_id), 'active', expires_at, payment_id, 'succeeded'))
     print(f'Subscription activated user_id={user_id} expires={expires_at}')
@@ -274,9 +286,10 @@ def handle_check_payment(body: dict) -> dict:
             cur.execute('UPDATE payments SET status=%s, paid_at=NOW() WHERE yookassa_payment_id=%s', (yk_status, payment_id))
 
         if yk_status == 'succeeded':
+            plan_days = PLANS.get(result.get('metadata', {}).get('plan', 'month'), PLANS['month'])['days']
             cur.execute("SELECT id FROM subscriptions WHERE user_id=%s AND status='active' AND expires_at>NOW() LIMIT 1", (user_id,))
             if not cur.fetchone():
-                expires_at = datetime.now() + timedelta(days=30)
+                expires_at = datetime.now() + timedelta(days=plan_days)
                 cur.execute('INSERT INTO subscriptions (user_id, status, expires_at, payment_id, payment_status) VALUES (%s,%s,%s,%s,%s)',
                             (int(user_id), 'active', expires_at, payment_id, 'succeeded'))
                 print(f'check_payment: subscription activated user_id={user_id} payment_id={payment_id}')

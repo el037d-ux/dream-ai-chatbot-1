@@ -102,7 +102,7 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
 
           <div className="mt-4 glass border border-primary/20 rounded-2xl p-4 text-center animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             <p className="text-sm text-foreground/80 font-raleway">✨ <strong>3 запроса бесплатно</strong> — без карты</p>
-            <p className="text-xs text-muted-foreground font-raleway mt-1">Полный доступ — <strong className="text-primary">119 ₽ / 30 дней</strong></p>
+            <p className="text-xs text-muted-foreground font-raleway mt-1">Полный доступ — <strong className="text-primary">от 99 ₽ / месяц</strong></p>
           </div>
         </div>
       </div>
@@ -158,7 +158,7 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
                 className="w-full bg-primary/10 border border-primary/30 text-primary font-raleway text-sm py-2.5 rounded-xl hover:bg-primary/20 transition-all flex items-center justify-center gap-2"
               >
                 <Icon name="Sparkles" size={14} />
-                Оформить подписку — 119 ₽ / 30 дней
+                Оформить подписку — от 99 ₽
               </button>
             )}
             <button

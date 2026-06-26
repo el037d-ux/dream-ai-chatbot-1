@@ -8,10 +8,16 @@ interface SubscribePageProps {
   onBack: () => void;
 }
 
+const PLANS = [
+  { id: 'month', title: 'Месяц', price: 99, period: 'за 30 дней', note: '', badge: '' },
+  { id: 'year', title: 'Год', price: 999, period: 'за 365 дней', note: '≈ 83 ₽ в месяц', badge: 'Выгодно −16%' },
+];
+
 export default function SubscribePage({ onBack }: SubscribePageProps) {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [plan, setPlan] = useState<'month' | 'year'>('year');
 
   const features = [
     'Безлимитное толкование снов',
@@ -21,6 +27,8 @@ export default function SubscribePage({ onBack }: SubscribePageProps) {
     'История всех снов',
     'Приоритетная поддержка',
   ];
+
+  const selectedPlan = PLANS.find(p => p.id === plan)!;
 
   const handlePay = async () => {
     if (!user) { setError('Войдите в аккаунт для оформления подписки'); return; }
@@ -34,6 +42,7 @@ export default function SubscribePage({ onBack }: SubscribePageProps) {
           action: 'create_payment',
           user_id: user.user_id,
           email: user.email,
+          plan,
         }),
       });
       const data = await res.json();
@@ -51,20 +60,37 @@ export default function SubscribePage({ onBack }: SubscribePageProps) {
         <div className="text-center mb-10 animate-fade-in-up">
           <div className="text-5xl mb-4 animate-float">✨</div>
           <h1 className="font-cormorant text-4xl font-light text-foreground mb-2">
-            Полный доступ к Морфею
+            Полный доступ к СонникАИ
           </h1>
           <p className="text-muted-foreground font-raleway text-sm">
             Откройте все тайны своих снов без ограничений
           </p>
         </div>
 
+        {/* Выбор тарифа */}
+        <div className="grid grid-cols-2 gap-3 mb-6 animate-fade-in-up" style={{ animationDelay: '0.05s' }}>
+          {PLANS.map(p => (
+            <button
+              key={p.id}
+              onClick={() => setPlan(p.id as 'month' | 'year')}
+              className={`relative text-left rounded-2xl border p-4 transition-all active:scale-[0.98]
+                ${plan === p.id ? 'border-primary bg-primary/10 animate-glow' : 'border-border/40 hover:border-primary/40'}`}
+            >
+              {p.badge && (
+                <span className="absolute -top-2.5 right-3 bg-mystic-gold text-background text-[10px] font-raleway font-semibold px-2 py-0.5 rounded-full">
+                  {p.badge}
+                </span>
+              )}
+              <div className="font-raleway text-sm text-muted-foreground">{p.title}</div>
+              <div className={`font-cormorant text-3xl font-semibold ${plan === p.id ? 'text-primary' : 'text-foreground'}`}>{p.price} ₽</div>
+              <div className="text-xs text-muted-foreground font-raleway mt-0.5">{p.period}</div>
+              {p.note && <div className="text-xs text-primary/80 font-raleway mt-1">{p.note}</div>}
+            </button>
+          ))}
+        </div>
+
         {/* Price card */}
         <div className="glass border border-primary/40 rounded-2xl p-6 mb-6 animate-fade-in-up animate-glow" style={{ animationDelay: '0.1s' }}>
-          <div className="text-center mb-6">
-            <div className="font-cormorant text-6xl font-semibold text-primary">119 ₽</div>
-            <div className="text-muted-foreground font-raleway text-sm mt-1">на 30 дней · автопродление отключено</div>
-          </div>
-
           <div className="space-y-3 mb-6">
             {features.map((f, i) => (
               <div key={i} className="flex items-center gap-3">
@@ -98,7 +124,7 @@ export default function SubscribePage({ onBack }: SubscribePageProps) {
             {loading ? (
               <><div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />Создаём платёж...</>
             ) : (
-              <><Icon name="CreditCard" size={18} />Оплатить 119 ₽</>
+              <><Icon name="CreditCard" size={18} />Оплатить {selectedPlan.price} ₽</>
             )}
           </button>
           <p className="text-center text-xs text-muted-foreground font-raleway mt-3">

@@ -22,7 +22,7 @@ export default function SubscribeBanner({ requestsLeft, onSubscribe, isBlocked }
             <>
               <p className="font-cormorant text-lg text-foreground font-medium">Бесплатные запросы закончились</p>
               <p className="text-sm text-muted-foreground font-raleway mt-0.5">
-                Оформите подписку, чтобы продолжить общение с Морфеем
+                Оформите подписку, чтобы продолжить общение с СонникАИ
               </p>
             </>
           ) : (
@@ -31,7 +31,7 @@ export default function SubscribeBanner({ requestsLeft, onSubscribe, isBlocked }
                 Остался {requestsLeft} бесплатный запрос
               </p>
               <p className="text-sm text-muted-foreground font-raleway mt-0.5">
-                Получите безлимитный доступ всего за 119 ₽ / 30 дней
+                Получите безлимитный доступ всего за 99 ₽ / месяц
               </p>
             </>
           )}
@@ -40,7 +40,7 @@ export default function SubscribeBanner({ requestsLeft, onSubscribe, isBlocked }
             className="mt-3 bg-primary text-primary-foreground font-raleway text-sm px-5 py-2 rounded-xl hover:bg-primary/80 transition-all flex items-center gap-2 animate-glow"
           >
             <Icon name="Sparkles" size={14} />
-            Оформить подписку — 119 ₽
+            Оформить подписку — от 99 ₽
           </button>
         </div>
       </div>

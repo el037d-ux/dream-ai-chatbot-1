@@ -112,7 +112,7 @@ export default function AuthPage({ onSuccess }: AuthPageProps) {
             ✨ <strong>3 запроса бесплатно</strong> — без карты
           </p>
           <p className="text-xs text-muted-foreground font-raleway mt-1">
-            Полный доступ — <strong className="text-primary">119 ₽ / 30 дней</strong>
+            Полный доступ — <strong className="text-primary">от 99 ₽ / месяц</strong>
           </p>
         </div>
       </div>
