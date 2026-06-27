@@ -17,7 +17,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<{ error?: string }>;
   register: (email: string, password: string) => Promise<{ error?: string }>;
   logout: () => void;
-  updateUsage: (free_used: number, has_sub: boolean) => void;
+  updateUsage: (free_used: number, has_sub: boolean, expires?: string | null) => void;
   canSendRequest: () => boolean;
   requestsLeft: () => number;
 }
@@ -70,9 +70,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('sonnik_user');
   };
 
-  const updateUsage = (free_used: number, has_sub: boolean) => {
+  const updateUsage = (free_used: number, has_sub: boolean, expires?: string | null) => {
     if (!user) return;
-    const updated = { ...user, free_requests_used: free_used, has_subscription: has_sub };
+    const updated = {
+      ...user,
+      free_requests_used: free_used,
+      has_subscription: has_sub,
+      ...(expires !== undefined ? { subscription_expires: expires } : {}),
+    };
     saveUser(updated);
   };
 

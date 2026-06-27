@@ -32,6 +32,15 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
     if (result.error) setAuthError(result.error);
   };
 
+  const formatExpiry = (iso: string | null) => {
+    if (!iso) return null;
+    const date = new Date(iso);
+    if (isNaN(date.getTime())) return null;
+    const dateStr = date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+    const daysLeft = Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+    return { dateStr, daysLeft };
+  };
+
   // Не авторизован — форма входа/регистрации
   if (!user) {
     return (
@@ -132,6 +141,12 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
                   ? <span className="text-primary">✦ Подписка активна</span>
                   : `Бесплатных запросов: ${Math.max(0, 3 - user.free_requests_used)} из 3`}
               </p>
+              {user.has_subscription && formatExpiry(user.subscription_expires) && (
+                <p className="text-xs text-muted-foreground font-raleway mt-0.5 flex items-center gap-1">
+                  <Icon name="CalendarClock" size={12} className="text-primary/70" />
+                  Действует до {formatExpiry(user.subscription_expires)!.dateStr}
+                </p>
+              )}
             </div>
           </div>
 
@@ -146,7 +161,12 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
                 {user.has_subscription ? '∞' : Math.max(0, 3 - user.free_requests_used)}
               </div>
               <div className="text-xs text-muted-foreground font-raleway mt-0.5">
-                {user.has_subscription ? 'безлимит по подписке' : 'бесплатных осталось'}
+                {user.has_subscription
+                  ? (() => {
+                      const exp = formatExpiry(user.subscription_expires);
+                      return exp && exp.daysLeft > 0 ? `осталось ${exp.daysLeft} дн.` : 'безлимит по подписке';
+                    })()
+                  : 'бесплатных осталось'}
               </div>
             </div>
           </div>
@@ -174,7 +194,13 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
                   });
                   const payData = await payRes.json();
                   if (payData.status === 'succeeded') {
-                    updateUsage(user.free_requests_used, true);
+                    const sRes = await fetch(API_URL, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ action: 'check_subscription', user_id: user.user_id }),
+                    });
+                    const sData = await sRes.json();
+                    updateUsage(sData.free_requests_used ?? user.free_requests_used, true, sData.subscription_expires);
                     setRefreshMsg('✦ Подписка активирована!');
                     setRefreshing(false);
                     return;
@@ -186,7 +212,7 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
                     body: JSON.stringify({ action: 'check_subscription', user_id: user.user_id }),
                   });
                   const subData = await subRes.json();
-                  updateUsage(subData.free_requests_used, subData.has_subscription);
+                  updateUsage(subData.free_requests_used, subData.has_subscription, subData.subscription_expires);
                   setRefreshMsg(subData.has_subscription ? '✦ Подписка активна!' : 'Активной подписки не найдено');
                 } catch {
                   setRefreshMsg('Ошибка проверки');
